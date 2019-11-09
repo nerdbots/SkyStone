@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 //import com.qualcomm.robotcore.hardware.DcMotor$RunMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -91,6 +93,7 @@ public class VuforiaFindCase2 {
     List<VuforiaTrackable> allTrackables;
     VuforiaTrackable stoneTarget;
     VuforiaTrackables targetsSkyStone;
+    private ElapsedTime runtime;
     public VuforiaFindCase2(LinearOpMode opmode){
         this.opmode = opmode;
         //this.hardwareMap = opmode.hardwareMap;
@@ -102,7 +105,9 @@ public class VuforiaFindCase2 {
     // Put a hold after each turn
         boolean targetVisible = false;
         targetsSkyStone.activate();
-        while (!targetVisible) {
+        runtime = new ElapsedTime();
+
+        while (!targetVisible || runtime.seconds() < 2.0) {
             // check all the trackable targets to see which one (if any) is visible.
             for (VuforiaTrackable trackable : allTrackables) {
                 if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
