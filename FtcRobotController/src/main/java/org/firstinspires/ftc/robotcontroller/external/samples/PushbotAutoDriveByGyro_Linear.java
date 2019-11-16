@@ -131,6 +131,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
             telemetry.addData(">", "Robot Heading = %d", gyro.getIntegratedZValue());
             telemetry.update();
         }
+
         gyro.resetZAxisIntegrator();
 
         // Step through each leg of the path,

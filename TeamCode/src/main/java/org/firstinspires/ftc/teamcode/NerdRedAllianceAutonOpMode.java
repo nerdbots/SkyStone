@@ -108,13 +108,13 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
 
 
         if (Skystone_Position == 3) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*8.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*8.0, 14.5, 0.0, false, false);
             offset_x_run3 = 8.0;
             drop_2_offset = -30.0;
             //sleep(2000);
         }
         else if (Skystone_Position == 2 || Skystone_Position == 4) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*3.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*3.0, 14.5, 0.0, false, false);
             offset_x_run3 = 3.0; // 0
             drop_2_offset = 3.0;
             //sleep(2000);
@@ -127,7 +127,7 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
         }
         else
         {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 14.5, 0.0, false, false);
             offset_x_run3 = 0.0;
             drop_2_offset = 2.0;
         }
@@ -141,7 +141,7 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run3");
 
 
-        myNerdBOT.nerdPidDrive(speed, 0.0, -4.0, 0); // move ack to miss bridge
+        myNerdBOT.nerdPidDrive(speed, 0.0, -5.0, 0); // move ack to miss bridge
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
         run3_x = (position_run3_x +offset_x_run3);
@@ -179,7 +179,7 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); // go at faster speed for long distances
 
         myNerdBOT.nerdPidDrive(speed, X_DIRECTION*24.0, 0.0, 0); // move to get away from the foundation
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 17.0, 0); // strafe to miss [parked] opponent
+        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 18.0, 0); // strafe to miss [parked] opponent
 
 
         myNerdBOT.nerdPidDrive(speed, X_DIRECTION*61 + X_DIRECTION*drop_2_offset, 0.0, 0); // go to other side of the field
@@ -188,7 +188,7 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3); // go slower for more precise tasks
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 8.5, 0); //
+        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 9.5, 0); //
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.5);
 
@@ -200,7 +200,7 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); //
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-57 - drop_2_offset, -4.5, 0); //
+        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-57 - drop_2_offset, -6.5, 0); //
         //myNerdBOT.setMinMaxSpeeds(0.0,0.7);
 
         myNerdBOT.nerdPidTurn(speed, X_DIRECTION*90);
