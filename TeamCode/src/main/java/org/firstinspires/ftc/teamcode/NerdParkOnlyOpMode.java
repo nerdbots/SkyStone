@@ -82,11 +82,12 @@ public class NerdParkOnlyOpMode extends LinearOpMode {
         waitForStart();
         sleep(SLEEP_TIME);
 
-
+ myNerdBOT.setMinMaxSpeeds(0,1);
         //UNITS ARE IN INCHES
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run1");
-        myNerdBOT.nerdPidDrive( speed, X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
+       // myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
+        myNerdBOT.nerdPidDriveWithRampUpDown(0,-80,0);
 
 
 

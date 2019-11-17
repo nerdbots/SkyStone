@@ -29,6 +29,8 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import java.util.HashMap;
+
 import com.qualcomm.robotcore.util.RobotLog;
 
 /**
@@ -43,222 +45,151 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="Nerd_Final_Auton_StonesOnly", group="Linear Opmode")
+@Autonomous(name="NerdSkystoneOpMode", group="Linear Opmode")
 //@Disabled
-public class NerdStonesOnlyOpMode extends LinearOpMode {
-    private NerdBOT myNerdBOT ;
+public class NerdSkystoneOpMode extends LinearOpMode {
+    private NerdBOT myNerdBOT;
     private NerdArmMove Arm;
-    private  double speed = 0.4;
-    private double Skystone_Position = 0;
-    private double position_run3_x = 82.0;
-    private double offset_x_run3 = 0;
-    private  double run3_x = 0;
-    private  double drop_2_offset = 0;
-    private double foundation_Offset = 0;
-    boolean debugFlag = false;
     static private VuforiaFindCase2 VFC;
-    private double x_offset_2 = 0;
-    private double offset_3rd_stone=0;
-
-
+    boolean debugFlag = false;
+    private int Skystone_Position = 0;
+    private double foundation_distance=82.0;
+    private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
+    private final int MAX_BLOCK_DROPS=2 ; // How many blocks will be delivered to the foundation.
+
     @Override
     public void runOpMode() {
-        //Create a NerdBOT object
+
         myNerdBOT = new NerdBOT(this);
         Arm = new NerdArmMove(this);
-        myNerdBOT.setDebug(debugFlag);
         VFC = new VuforiaFindCase2(this);
-
+        myNerdBOT.setDebug(debugFlag);
 
         //Initialize Hardware
         myNerdBOT.initializeHardware();
         Arm.initHardware();
         VFC.initVuforia();
+
         //Initialize the PID Calculators
         myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
-        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
-        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0,debugFlag);
-        myNerdBOT.initializeTurnPIDCalculator(0.0075, 0.000, 0.0,debugFlag);
-        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
-        myNerdBOT.setMinMaxSpeeds(0.0,0.5);
+        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
+        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0, debugFlag);
+        myNerdBOT.initializeTurnPIDCalculator(0.0075, 0.000, 0.0, debugFlag);
 
+        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
+        myNerdBOT.setMinMaxSpeeds(0.0, 0.5);
 
         telemetry.addData("Init", "Completed");
         telemetry.update();
 
-
         waitForStart();
-
-
-
-        //UNITS ARE IN INCHES
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run1");
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 11.5, 0.0);
+        //Move forward and detect Skystone
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 12.5, 0.0);
         Skystone_Position = VFC.vuforia();
-        telemetry.addData("Position Case",Skystone_Position );
-        telemetry.update();
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run2");
 
+        //Based on the Skystone position detected by vuforia, set the pickup order and offsets
+        stonesOrder(Skystone_Position);
 
-        Arm.ArmLoop(-170,7, 0.8, 0.5); // -160, 0.5
+        NerdSkystone currentSkyStone;
+        NerdSkystone nextSkyStone;
+        double dropDistance;
+        double pickupDistance;
 
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3);
+        for (int dropNumber = 1; dropNumber <= MAX_BLOCK_DROPS; dropNumber++ ) {
+            currentSkyStone = skyStonesMap.get(dropNumber);
 
+            //Drop the back arm
+            Arm.ArmLoop(-170, 7, 0.8, 0.5); // -160, 0.5
 
-        if (Skystone_Position == 3) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*8.0, 13.5, 0.0, false, false);
-            offset_x_run3 = 8.0;
-            drop_2_offset = -32.0;
-            offset_3rd_stone = -26.0;
+            //Move to the block to be picked.
+            if(dropNumber == 1) {
+                //Only first run we may have to use X and Y based on Skystone position.
+                myNerdBOT.nerdPidDrive(X_DIRECTION * currentSkyStone.getX_offset(), 12.5, 0.0, false, false);
+            }
+            else{
+                myNerdBOT.nerdPidDrive(0, 6.5, 0.0, false, false);
 
-            //THIS MEANS BLOCKS 2, 4, AND 5 ARE STILL AVAILABLE
-            //sleep(2000);
+            }
+
+            //Pickup the block
+            Arm.ArmLoop(-170,140, 0.5, 0.8); // grab 1
+            Arm.ArmLoop(-10,7, 0.6, 0.2); // home
+
+            // Move Back
+            myNerdBOT.nerdPidDrive( 0.0, -9.0, 0); // move ack to miss bridge
+
+            //We reduce the distance to foundation every run.
+            // We drop the first skystone farthest distance, and then work our way backwards.
+            foundation_distance = foundation_distance - (dropNumber - 1)*8;
+            dropDistance = foundation_distance + currentSkyStone.getX_offset();
+
+            //Move to the foundation
+            myNerdBOT.setMinMaxSpeeds(0.0,0.7); // Go faster when going longer distance.
+            myNerdBOT.nerdPidDrive(  X_DIRECTION*-dropDistance, 0.0, 0.0, true, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
+
+            //Approach slowly to foundation
+            myNerdBOT.setMinMaxSpeeds(0.0,0.4);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
+
+            //Drop the blocks
+            Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
+            Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
+            Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
+            Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
+
+            //Move back from Foundation
+            myNerdBOT.nerdPidDrive(X_DIRECTION*0.0, -12.5, 0); // back up from foundation so we can move back to blocks without hitting foundation
+
+            if(dropNumber < MAX_BLOCK_DROPS) {
+                //Get the offset from next skystone and calculate the distance to next stone to be picked up.
+                nextSkyStone = skyStonesMap.get(dropNumber + 1);
+                pickupDistance = foundation_distance + nextSkyStone.getX_offset();
+
+                //Move to the next Stone
+                myNerdBOT.setMinMaxSpeeds(0.0, 0.7); // go at faster speed for long distances
+                myNerdBOT.nerdPidDrive(X_DIRECTION * (pickupDistance), 0.0, 0); // go to other side of the field
+            }
+            else{
+                //If this is last block to be transferred, park.
+                myNerdBOT.setMinMaxSpeeds(0.0, 0.7); // go at faster speed for long distances
+                myNerdBOT.nerdPidDrive(X_DIRECTION * (foundation_distance/2.0), 0.0, 0);
+
+            }
+        }
+    }
+
+public void stonesOrder(int Skystone_Position) {
+        if (Skystone_Position == 1) {
+            //Order of priority for Plan B bot intake 1.0 for skystone position 1: Block 1, 4, 2, 3, 5, 6
+            skyStonesMap.put(1, new NerdSkystone(1, -8));
+            skyStonesMap.put(2, new NerdSkystone(4,16));
+            skyStonesMap.put(3, new NerdSkystone(2, 0));
+            skyStonesMap.put(4, new NerdSkystone(3, 8));
+            skyStonesMap.put(5, new NerdSkystone(5,24));
+            skyStonesMap.put(6, new NerdSkystone(6,32));
         }
         else if (Skystone_Position == 2 || Skystone_Position == 4) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 13.5, 0.0, false, false);
-            offset_x_run3 = 0.0; // 0
-            drop_2_offset = 2.0;
-            offset_3rd_stone = -32.0;
-
-
-            //THIS MEANS BLOCKS 1, 3, AND 4 ARE AVAILABLE
-            //sleep(2000);
+            //Order of priority for Plan B bot intake 1.0 for skystone position 2: Block 2, 5, 1, 3, 4, 6
+            skyStonesMap.put(1, new NerdSkystone(2, 0));
+            skyStonesMap.put(2, new NerdSkystone(5,24));
+            skyStonesMap.put(3, new NerdSkystone(1, -8));
+            skyStonesMap.put(4, new NerdSkystone(3, 8));
+            skyStonesMap.put(5, new NerdSkystone(4,16));
+            skyStonesMap.put(6, new NerdSkystone(6,32));
         }
-        else if (Skystone_Position == 1) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-7.0, 14.5, 0.0, false, false); //13.5
-            offset_x_run3 = -7.0;
-            drop_2_offset = -8.0; // -9
-            offset_3rd_stone = -26.0;
-
-            //THIS MEANS BLOCKS 2,3, AND 5 ARE AVAILABLE FOR PICKUP
-            //sleep(2000);
-        }
-        else
-        {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 13.5, 0.0, false, false);
-            offset_x_run3 = 0.0;
-            drop_2_offset = 2.0;
-            offset_3rd_stone = -26.0;
+        else {
+            //Order of priority for Plan B bot intake 1.0 for skystone position 3: Block 3, 1, 2, 4, 5, 6
+            skyStonesMap.put(1, new NerdSkystone(3, 8));
+            skyStonesMap.put(2, new NerdSkystone(1,-8));
+            skyStonesMap.put(3, new NerdSkystone(2, 0));
+            skyStonesMap.put(4, new NerdSkystone(4, 16));
+            skyStonesMap.put(5, new NerdSkystone(5,24));
+            skyStonesMap.put(6, new NerdSkystone(6,32));
 
         }
-
-
-
-          Arm.ArmLoop(-170,140, 0.5, 0.8); // grab 1
-          //sleep(500);
-           Arm.ArmLoop(-10,7, 0.6, 0.2); // home
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run3");
-
-
-        myNerdBOT.nerdPidDrive(speed, 0.0, -4.0, 0); // move back to miss bridge
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
-        run3_x = (position_run3_x +offset_x_run3);
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*-run3_x, 0.0, 0.0, true, false); // go to foundation
-
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run4");
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
-
-
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.4);
-
-//Drop first block
-
-        Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
-        Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
-
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -8, 0); // back up to miss nub
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.7); // go at faster speed for long distances
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*43.0, 0.0, 0); // move to get away from the foundation
-
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*61 + X_DIRECTION*drop_2_offset, 0.0, 0); // go to other side of the field
-
-        Arm.ArmLoop(-170,7,0.8,0.5); // drop one arm
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3); // go slower for more precise tasks
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 11.5, 0); //
-
-
-//Pickup Second stone
-
-        Arm.ArmLoop(-170,140, 0.5, 0.8);// brings down second arm on block
-        Arm.ArmLoop(-10,7, 0.6, 0.2);  // homes arms while holding block
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -6, 0); //
-
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.7); //
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-position_run3_x - drop_2_offset, -4.5, 0); //
-
-
-        // Drop second stone
-
-        Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-160,7, 0.5, 0.5);  // squeeze foundation and return front arm up
-        Arm.ArmLoop(-10,7, 0.5, 0.5);  // squeeze foundation and return front arm up
-
-       // myNerdBOT.nerdPidDrive(speed, X_DIRECTION*23, 1, X_DIRECTION*90); //park
-
-
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Completed");
-
-        myNerdBOT.nerdPidDrive(speed, 0.0, -8.0, 0); // move back to miss bridge
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
-        run3_x = (position_run3_x + offset_3rd_stone );
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*run3_x, 0.0, 0.0); // go to pick next block
-
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
-
-        Arm.ArmLoop(-170,7,0.8,0.5); // drop one arm
-
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3);
-
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 12.0, 0.0, true, false); // approach foundation
-//Pickup third stone
-
-        Arm.ArmLoop(-170,140, 0.5, 0.8);// brings down second arm on block
-        Arm.ArmLoop(-10,7, 0.6, 0.2);  // homes arms while holding block
-
-
-
-        myNerdBOT.nerdPidDrive(speed, 0.0, -6.0, 0); // move back to miss bridge
-        myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-run3_x, 0.0, 0); // move to get away from the foundation
-        //myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 0.0, 0); // strafe to miss [parked] opponent
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0,6.0, 0); // back up to miss nub
-
-        //Drop 3rd Stone
-
-        Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
-        Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -6.0, 0); // back up to miss nub
-
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*43.0, 0.0, 0); // move to get away from the foundation
-       // myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 0.0, 0); // strafe to miss [parked] opponent
-
-    }
 }
+
+
+}
+
