@@ -19,6 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -44,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * or add a @Disabled annotation to prevent this OpMode from being added to the Driver Station
  */
 //@Disabled
-@TeleOp(name="Final_TeleOpCopy", group="Linear Opmode")
+@TeleOp(name="Final_TeleOpCopy", group="Final")
 public class FinalTeleop extends LinearOpMode {
     private BNO055IMU imu;
     private DcMotor frontRightMotor;
@@ -188,14 +189,19 @@ public class FinalTeleop extends LinearOpMode {
         //int targetF = 60;
         
 
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            
-            sleep(50);
-            idle();
+        if (!imu.isGyroCalibrated()) {
+            telemetry.addData("Gyro", "Not Initialized");
+            telemetry.update();
+        } else {
+            telemetry.addData("Gyro", "Initialized");
+            telemetry.update();
         }
+
         
         waitForStart();
-        
+
+
+
         FPIDTime.reset();
         RPIDTime.reset();
         ZPIDTime.reset();
@@ -203,15 +209,36 @@ public class FinalTeleop extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            
-            joyX = gamepad2.left_stick_x;
-            joyY = gamepad2.left_stick_y;
-            
+            if(gamepad2.left_stick_x != 0 || gamepad2.left_stick_y != 0) {
+                joyX = gamepad2.left_stick_x;
+                joyY = gamepad2.left_stick_y;
+            } else {
+                joyX = gamepad1.left_stick_x;
+                joyY = gamepad1.left_stick_y;
+            }
+
+            if()
+
+
             if (gamepad1.a) {
                 resetAngle();
                 
                 
-            } 
+            }
+            if (gamepad1.b) {
+                BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+                parameters.mode                = BNO055IMU.SensorMode.IMU;
+                parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+                parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                parameters.loggingEnabled      = false;
+                parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+                parameters.loggingTag          = "IMU";
+                parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+                imu.initialize(parameters);
+
+            }
             
             zMag = (joyX * joyX) + (joyY * joyY);
             
