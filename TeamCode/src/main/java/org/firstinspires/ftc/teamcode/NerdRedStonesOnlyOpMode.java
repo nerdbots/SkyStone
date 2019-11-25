@@ -95,7 +95,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         //UNITS ARE IN INCHES
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run1");
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 11.5, 0.0);
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 11.5, 0.0);
         Skystone_Position = VFC.vuforia();
         telemetry.addData("Position Case",Skystone_Position );
         telemetry.update();
@@ -109,7 +109,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
 
 
         if (Skystone_Position == 3) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*8.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive(X_DIRECTION*8.0, 13.5, 0.0, false, false);
             offset_x_run3 = 8.0;
             drop_2_offset = -32.0;
             offset_3rd_stone = -26.0;
@@ -118,7 +118,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
             //sleep(2000);
         }
         else if (Skystone_Position == 2 || Skystone_Position == 4) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*2.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*2.0, 13.5, 0.0, false, false);
             offset_x_run3 = 2.0; // 0
             drop_2_offset = -20.0;
             offset_3rd_stone = -32.0;
@@ -128,7 +128,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
             //sleep(2000);
         }
         else if (Skystone_Position == 1) {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-7.0, 14.5, 0.0, false, false); //13.5
+            myNerdBOT.nerdPidDrive( X_DIRECTION*-7.0, 14.5, 0.0, false, false); //13.5
             offset_x_run3 = -7.0;
             drop_2_offset = -8.0; // -9
             offset_3rd_stone = -26.0;
@@ -138,7 +138,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         }
         else
         {
-            myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 13.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 13.5, 0.0, false, false);
             offset_x_run3 = 0.0;
             drop_2_offset = 2.0;
             offset_3rd_stone = -26.0;
@@ -154,11 +154,11 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run3");
 
 
-        myNerdBOT.nerdPidDrive(speed, 0.0, -6.0, 0); // move back to miss bridge
+        myNerdBOT.nerdPidDrive(0.0, -6.0, 0); // move back to miss bridge
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
         run3_x = (position_run3_x +offset_x_run3);
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*-run3_x, 0.0, 0.0, true, false); // go to foundation
+        myNerdBOT.nerdPidDrive( X_DIRECTION*-run3_x, 0.0, 0.0, true, false); // go to foundation
 
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run4");
@@ -166,7 +166,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
 
 
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
 
 //Drop first block
 
@@ -176,18 +176,18 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.5);
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -13.0, 0); // back up to miss nub
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, -13.0, 0); // back up to miss nub
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); // go at faster speed for long distances
 
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*108 + X_DIRECTION*drop_2_offset, 0.0, 0); // go to other side of the field
+        myNerdBOT.nerdPidDrive( X_DIRECTION*108 + X_DIRECTION*drop_2_offset, 0.0, 0); // go to other side of the field
 
         Arm.ArmLoop(-170,7,0.8,0.5); // drop one arm
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3); // go slower for more precise tasks
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, 5, 0); //
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 5, 0); //
 
 
 //Pickup Second stone
@@ -196,11 +196,11 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         Arm.ArmLoop(-10,7, 0.6, 0.2);  // homes arms while holding block
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.5);
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -8.0, 0); //
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, -8.0, 0); //
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); //
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-position_run3_x - drop_2_offset, 0.0, 0); //
+        myNerdBOT.nerdPidDrive( X_DIRECTION*-position_run3_x - drop_2_offset, 0.0, 0); //
 
 
         // Drop second stone
@@ -216,11 +216,11 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Completed");
 
-        myNerdBOT.nerdPidDrive(speed, 0.0, -8.0, 0); // move back to miss bridge
+        myNerdBOT.nerdPidDrive( 0.0, -8.0, 0); // move back to miss bridge
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
         run3_x = (position_run3_x + offset_3rd_stone );
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*run3_x, 0.0, 0.0); // go to pick next block
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*run3_x, 0.0, 0.0); // go to pick next block
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
@@ -229,7 +229,7 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3);
 
-        myNerdBOT.nerdPidDrive( speed, X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
 //Pickup third stone
 
         Arm.ArmLoop(-170,140, 0.5, 0.8);// brings down second arm on block
@@ -237,13 +237,13 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
 
 
 
-        myNerdBOT.nerdPidDrive(speed, 0.0, -8.0, 0); // move back to miss bridge
+        myNerdBOT.nerdPidDrive( 0.0, -8.0, 0); // move back to miss bridge
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*-run3_x, 0.0, 0); // move to get away from the foundation
+        myNerdBOT.nerdPidDrive( X_DIRECTION*-run3_x, 0.0, 0); // move to get away from the foundation
         //myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 0.0, 0); // strafe to miss [parked] opponent
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0,6.0, 0); // back up to miss nub
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0,6.0, 0); // back up to miss nub
 
         //Drop 3rd Stone
 
@@ -252,9 +252,9 @@ public class NerdRedStonesOnlyOpMode extends LinearOpMode {
         Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
         Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*0.0, -6.0, 0); // back up to miss nub
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, -6.0, 0); // back up to miss nub
 
-        myNerdBOT.nerdPidDrive(speed, X_DIRECTION*43.0, 0.0, 0); // move to get away from the foundation
+        myNerdBOT.nerdPidDrive( X_DIRECTION*43.0, 0.0, 0); // move to get away from the foundation
        // myNerdBOT.nerdPidDrive(speed, X_DIRECTION*19.0, 0.0, 0); // strafe to miss [parked] opponent
 
     }

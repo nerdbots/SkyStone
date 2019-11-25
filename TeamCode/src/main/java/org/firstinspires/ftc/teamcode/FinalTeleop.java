@@ -217,7 +217,6 @@ public class FinalTeleop extends LinearOpMode {
                 joyY = gamepad1.left_stick_y;
             }
 
-            if()
 
 
             if (gamepad1.a) {
