@@ -45,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * or add a @Disabled annotation to prevent this OpMode from being added to the Driver Station
  */
 //@Disabled
-@TeleOp(name="Final_TeleOpCopy", group="Final")
+@TeleOp(name="Final_TeleOp", group="Final")
 public class FinalTeleop extends LinearOpMode {
     private BNO055IMU imu;
     private DcMotor frontRightMotor;
@@ -129,7 +129,7 @@ public class FinalTeleop extends LinearOpMode {
 
 
 
-/*
+
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -143,7 +143,8 @@ public class FinalTeleop extends LinearOpMode {
         
         imu.initialize(parameters);
 
-     //   resetAngle();
+
+        resetAngle();
         
         
         
@@ -155,7 +156,7 @@ public class FinalTeleop extends LinearOpMode {
         rearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-*/
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -219,12 +220,13 @@ public class FinalTeleop extends LinearOpMode {
 
 
 
+
             if (gamepad1.a) {
                 resetAngle();
                 
                 
             }
-            if (gamepad1.b) {
+            /*if (gamepad1.b) {
                 BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
                 parameters.mode                = BNO055IMU.SensorMode.IMU;
@@ -238,7 +240,7 @@ public class FinalTeleop extends LinearOpMode {
                 imu.initialize(parameters);
 
             }
-            
+*/
             zMag = (joyX * joyX) + (joyY * joyY);
             
             
