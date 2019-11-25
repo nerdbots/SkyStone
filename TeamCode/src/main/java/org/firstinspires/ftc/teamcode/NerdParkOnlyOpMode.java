@@ -67,9 +67,9 @@ public class NerdParkOnlyOpMode extends LinearOpMode {
             //Initialize Hardware
         myNerdBOT.initializeHardware();
         //Initialize the PID Calculators
-        myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
-        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
-        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0,debugFlag);
+        myNerdBOT.initializeXPIDCalculator(0.0025, 0.005, 0.0, debugFlag);
+        myNerdBOT.initializeYPIDCalculator(0.0025, 0.005, 0.0,debugFlag);
+        myNerdBOT.initializeZPIDCalculator(0.3, 0.3, 0.0,debugFlag);
         myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 0.02535,debugFlag);
         //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
         myNerdBOT.setMinMaxSpeeds(0.0,0.5);
@@ -87,8 +87,9 @@ public class NerdParkOnlyOpMode extends LinearOpMode {
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run1");
        // myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
-        myNerdBOT.nerdPidDriveWithRampUpDown(0,-80,0);
-
+      myNerdBOT.nerdPidDriveWithRampUpDown(-85,0,0);
+       // myNerdBOT.nerdPidDriveWithRampUpDown(-96,-8,0);
+        myNerdBOT.nerdPidDriveWithRampUpDown(85,0,0);
 
 
     }
