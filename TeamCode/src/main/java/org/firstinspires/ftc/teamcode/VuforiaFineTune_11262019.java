@@ -43,7 +43,8 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="VuforiaFineTune_Nov25", group="Final")
+@Autonomous(name="VuforiaFineTune_V11262019", group="Final")
+
 //@Disabled
 
 public class VuforiaFineTune_11262019 extends LinearOpMode {
@@ -104,8 +105,10 @@ public class VuforiaFineTune_11262019 extends LinearOpMode {
         if (debugFlag);
             RobotLog.d("NerdSampleOpMode - Run1");
 
-//        myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 11.5, 0.0);
+        // Move the Robot straight before sensing the stone
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 11.5, 0.0);
 
+        //Vuforia Sensing
         Skystone_Position = VFC.vuforia(); //will return values of SkystoneXYP array
 
         telemetry.addData("Position Case X",Skystone_Position[0]);
@@ -113,7 +116,7 @@ public class VuforiaFineTune_11262019 extends LinearOpMode {
         telemetry.addData("Position Case", Skystone_Position[2]);
         telemetry.update();
 
-        sleep(2000);
+        sleep(2000); // This is for test purposes only
 
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run2");

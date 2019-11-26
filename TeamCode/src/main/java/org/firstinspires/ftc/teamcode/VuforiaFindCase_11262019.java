@@ -57,6 +57,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 //@Autonomous(name="AV4VA", group="MoveBot")
 // @Disabled
 
+    // ~~~~~~~~~~~ Vuforia Find the Stone Function ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 public class VuforiaFindCase_11262019 {
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
@@ -80,8 +82,9 @@ public class VuforiaFindCase_11262019 {
      */
     private static final String VUFORIA_KEY =
             "AXGLTO3/////AAABmTK6sC55/UXIrPPDsV2B+BRsDCvfYQT4WRRRqXzke8Pb5l8bDG0wY/10aTdh0xTyIZhrb/JsLpRDhxG2PU9aNrc2D99uWBFFgYc3oO/O3y628047am08g44IwVCv3SmYYtc9x3fK/Rp+kMttG9UA2mWobqfelMbFaIub6aAjJjh+zzY+Em3Bw1hcQ+QlFSSiuG7YrAuQZ1tvFVBOPeHa9cFHCpVNeD7kXyfND69ZWw/ZS5zDyFdgAIaBAO9kpyvmpfGRQwQXJFCnGAQ9qql2ggKYY8EmPw+K6wM3PDYgpELOlhrHBvF5gAHtqkqqYgyv1EI3KD074u3SgdF1l3t6jT98tPvbisXEBbo6pDLl6B/o";
-    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+    // Since ImageTarget trackables use mm to specify their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
+
     private LinearOpMode opmode;
     private float phoneZRotate = 0;
     private static final float mmPerInch = 25.4f;
@@ -96,8 +99,9 @@ public class VuforiaFindCase_11262019 {
     private VuforiaLocalizer vuforia = null;
     private float phoneXRotate = 0;
     private float phoneYRotate = 0;
+
     public int positionCase = 4;
-        public double positionY = 0;
+    public double positionY = 0;
 
     public double[] SkyStoneXYP = new double[3];
     List<VuforiaTrackable> allTrackables;
@@ -188,6 +192,9 @@ public class VuforiaFindCase_11262019 {
 
         return SkyStoneXYP;
     }
+
+    // ~~~~~~~~~~~ Vuforia Initialization Function ~~~~~~~~~~~~~~~~~~~~~~~~~
+
     public void initVuforia(){
         int cameraMonitorViewId = opmode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", this.opmode.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
