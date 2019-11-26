@@ -31,8 +31,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.HashMap;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
@@ -56,7 +54,7 @@ public class NerdSkystoneOpMode extends LinearOpMode {
     private double foundation_distance=82.0;
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
-    private final int MAX_BLOCK_DROPS=2 ; // How many blocks will be delivered to the foundation.
+    private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
 
     @Override
     public void runOpMode() {
@@ -99,16 +97,17 @@ public class NerdSkystoneOpMode extends LinearOpMode {
         for (int dropNumber = 1; dropNumber <= MAX_BLOCK_DROPS; dropNumber++ ) {
             currentSkyStone = skyStonesMap.get(dropNumber);
 
-            //Drop the back arm
+            //Drop the first arm
             Arm.ArmLoop(-170, 7, 0.8, 0.5); // -160, 0.5
 
             //Move to the block to be picked.
             if(dropNumber == 1) {
-                //Only first run we may have to use X and Y based on Skystone position.
+                //Only first run we may have to use X and Y based on Skystone position, since we add
+                // the offsets gathered from this to the total pickup distance for the next stone
                 myNerdBOT.nerdPidDrive(X_DIRECTION * currentSkyStone.getX_offset(), 12.5, 0.0, false, false);
             }
             else{
-                myNerdBOT.nerdPidDrive(0, 6.5, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(0, 7.5, 0.0, false, false);
 
             }
 
@@ -117,19 +116,21 @@ public class NerdSkystoneOpMode extends LinearOpMode {
             Arm.ArmLoop(-10,7, 0.6, 0.2); // home
 
             // Move Back
-            myNerdBOT.nerdPidDrive( 0.0, -9.0, 0); // move ack to miss bridge
+  //          myNerdBOT.nerdPidDrive( 0.0, -8.0, 0); // move ack to miss bridge
 
             //We reduce the distance to foundation every run.
-            // We drop the first skystone farthest distance, and then work our way backwards.
-            foundation_distance = foundation_distance - (dropNumber - 1)*8;
+            // We drop the first skystone at farthest distance, and then work our way backwards to prevent slipping.
+            if (dropNumber > 1) {
+                foundation_distance = foundation_distance - 8;
+            }
             dropDistance = foundation_distance + currentSkyStone.getX_offset();
 
             //Move to the foundation
-            myNerdBOT.setMinMaxSpeeds(0.0,0.7); // Go faster when going longer distance.
-            myNerdBOT.nerdPidDrive(  X_DIRECTION*-dropDistance, 0.0, 0.0, true, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
+            myNerdBOT.setMinMaxSpeeds(0.0,1); // Go faster when going longer distance.
+            myNerdBOT.nerdPidDrive(  X_DIRECTION*-dropDistance, -8, 0.0); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
 
             //Approach slowly to foundation
-            myNerdBOT.setMinMaxSpeeds(0.0,0.4);
+            myNerdBOT.setMinMaxSpeeds(0.0,0.5);
             myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 9.0, 0.0, true, false); // approach foundation
 
             //Drop the blocks
@@ -139,7 +140,7 @@ public class NerdSkystoneOpMode extends LinearOpMode {
             Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
 
             //Move back from Foundation
-            myNerdBOT.nerdPidDrive(X_DIRECTION*0.0, -12.5, 0); // back up from foundation so we can move back to blocks without hitting foundation
+            //myNerdBOT.nerdPidDrive(X_DIRECTION*0.0, -11.0, 0); // back up from foundation so we can move back to blocks without hitting foundation
 
             if(dropNumber < MAX_BLOCK_DROPS) {
                 //Get the offset from next skystone and calculate the distance to next stone to be picked up.
@@ -147,13 +148,13 @@ public class NerdSkystoneOpMode extends LinearOpMode {
                 pickupDistance = foundation_distance + nextSkyStone.getX_offset();
 
                 //Move to the next Stone
-                myNerdBOT.setMinMaxSpeeds(0.0, 0.7); // go at faster speed for long distances
-                myNerdBOT.nerdPidDrive(X_DIRECTION * (pickupDistance), 0.0, 0); // go to other side of the field
+                myNerdBOT.setMinMaxSpeeds(0.0, 1); // go at faster speed for long distances
+                myNerdBOT.nerdPidDrive(X_DIRECTION * (pickupDistance), -5, 0); // go to other side of the field
             }
             else{
                 //If this is last block to be transferred, park.
-                myNerdBOT.setMinMaxSpeeds(0.0, 0.7); // go at faster speed for long distances
-                myNerdBOT.nerdPidDrive(X_DIRECTION * (foundation_distance/2.0), 0.0, 0);
+                myNerdBOT.setMinMaxSpeeds(0.0, 1); // go at faster speed for long distances
+                myNerdBOT.nerdPidDrive(X_DIRECTION * (foundation_distance/2.0), -5, 0);
 
             }
         }
