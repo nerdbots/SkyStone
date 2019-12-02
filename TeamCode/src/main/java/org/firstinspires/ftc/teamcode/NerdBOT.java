@@ -1004,17 +1004,6 @@ public class NerdBOT{
 
             if(armAction == 4 && nerdArm.Timeout.seconds() < 1.0){
 
-//                Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
-//                Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
-//                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), -160,0.05, 0, 0, 0, 0.5);
-//                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(),   0,0.05, 0, 0, 1, 0.5);
-//                nerdArm.rearMotor.setPower(nerdArm.RSpeed);
-//                nerdArm.frontMotor.setPower(nerdArm.FSpeed);
-//                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(),  -10,0.05, 0, 0, 0,0.5);
-//                nerdArm.rearMotor.setPower(nerdArm.RSpeed);
-//                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(),   7,0.05, 0, 0, 1, 0.5);
-//                nerdArm.frontMotor.setPower(nerdArm.FSpeed);
-
                 nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 0,0.012, 0.0, 0.0009, 0, 0.5);
                 nerdArm.rearMotor.setPower(nerdArm.RSpeed);
 
@@ -1022,7 +1011,6 @@ public class NerdBOT{
                 nerdArm.frontMotor.setPower(nerdArm.FSpeed);
 
             }
-
 
             zpid = zPIDCalculator.getOutput(getZAngleValue(),GYRO);
             xpid = xPIDCalculator.getOutput(findXDisplacement(),ENCODERS);

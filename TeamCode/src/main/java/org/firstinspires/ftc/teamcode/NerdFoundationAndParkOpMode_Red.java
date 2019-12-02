@@ -43,9 +43,9 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="FoundationAndParkOpMode", group="Linear Opmode")
+@Autonomous(name="NerdFoundationAndParkOpMode_Red", group="Linear Opmode")
 //@Disabled
-public class NerdFoundationAndParkOpMode extends LinearOpMode {
+public class NerdFoundationAndParkOpMode_Red extends LinearOpMode {
     private NerdBOT myNerdBOT ;
 
     private  double speed = 0.4;
@@ -54,15 +54,14 @@ public class NerdFoundationAndParkOpMode extends LinearOpMode {
 
     //Things to be changed depending on dominant alliance partner (for parking and distance to foundation)
     private final long SLEEP_TIME = 0;
-    private final double X_DISTANCE_TO_FOUNDATION = 24.0;
-    private final double Y_DISTANCE_TO_FOUNDATION = 0.0;
+    private final double X_DISTANCE_TO_FOUNDATION = 0.0;
+    private final double Y_DISTANCE_TO_FOUNDATION = 24.0;
     private final double Z_ANGLE_FOUNDATION = 0.0;
-    private final double Y_DISTANCE_UP_TO_FOUNDATION = 0.0;
-    private final long SLEEP_TIME2 = 0;
     private final double X_DISTANCE_TO_PARKING = 36.0;
     private final double Y_DISTANCE_TO_PARKING = 0.0;
     private final double Z_ANGLE_PARKING = 0.0;
     private final double FORWARD_ON_PARKING_LINE = 0.0;
+    private final double X_DIRECTION=-1;
 
     @Override
     public void runOpMode() {
@@ -97,12 +96,11 @@ public class NerdFoundationAndParkOpMode extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run1");
 
 
-        myNerdBOT.nerdPidDrive(  X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, true, false);
-        myNerdBOT.nerdPidDrive(  0.0, Y_DISTANCE_UP_TO_FOUNDATION, 0.0, true, false);
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, true, false);
         Arm.UseTheForce();
         myNerdBOT.nerdPidDrive( 0.0, -36.0, 0, true, false);
         Arm.ArmLoop(-10,7, 0.5, 0.5);
-        myNerdBOT.nerdPidDrive( X_DISTANCE_TO_PARKING, Y_DISTANCE_TO_PARKING, Z_ANGLE_PARKING, true, false);
+        myNerdBOT.nerdPidDrive( X_DIRECTION*X_DISTANCE_TO_PARKING, Y_DISTANCE_TO_PARKING, Z_ANGLE_PARKING, true, false);
         myNerdBOT.nerdPidDrive( 0.0, FORWARD_ON_PARKING_LINE, 0, true, false);
 
 
