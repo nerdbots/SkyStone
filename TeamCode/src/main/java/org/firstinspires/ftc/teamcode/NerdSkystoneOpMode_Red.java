@@ -75,8 +75,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
         VFC.initVuforia();
 
         //Initialize the PID Calculators
-//        myNerdBOT.initializeXPIDCalculator(0.0025, 0.005, 0.0, debugFlag);
-//        myNerdBOT.initializeYPIDCalculator(0.0025, 0.005, 0.0,debugFlag);
+
         myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
         myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
         myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0, debugFlag);
@@ -141,21 +140,19 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
             if(dropNumber == MAX_BLOCK_DROPS)
                 dropDistance=dropDistance*0.5 + FOUNDATION_OFFSET_FOR_LAST_DROP;
 
-            //For longer distance in X direction, we change the Z gains and speed.
-            myNerdBOT.setXPIDGains(0.0025, 0.005, 0.0);
-            myNerdBOT.setYPIDGains(0.0025, 0.005, 0.0);
-            myNerdBOT.setZPIDGains(0.3, 0.3, 0.0);
+            //For longer distance in X direction, we change the PID gains and speed.
+
+            setPIDGainsForRampUpDown();
             myNerdBOT.setMinMaxSpeeds(0.0,1);
+
             double ydistance = -8.0;
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance-1;
 
             myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
 
-            //Reset Z PID gains for shorter travel in Y direction
+            //Reset  PID gains for shorter travel in Y direction
 
-            myNerdBOT.setXPIDGains(0.0025, 0.0, 0.0);
-            myNerdBOT.setYPIDGains(0.0025, 0.0, 0.0);
-            myNerdBOT.setZPIDGains(0.015, 0.0, 0.0);
+            setPIDGainsForShortDistances();
 
 
             if(dropNumber < MAX_BLOCK_DROPS) {
@@ -173,21 +170,16 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
                     nextSkyStone = skyStonesMap.get(dropNumber + 1);
                     pickupDistance = foundation_distance + X_DIRECTION*nextSkyStone.getX_offset()- ARM_OFFSET;
 
-                //For longer distance in X direction, we change the Z gains and speed.
-                    myNerdBOT.setZPIDGains(0.3, 0.3, 0.0);
-                    myNerdBOT.setXPIDGains(0.0025, 0.005, 0.0);
-                    myNerdBOT.setYPIDGains(0.0025, 0.005, 0.0);
-                    myNerdBOT.setMinMaxSpeeds(0.0, 1);
-//                    myNerdBOT.nerdPidDriveWithRampUpDown(X_DIRECTION * (pickupDistance), -12, 0, false, false); // go to other side of the field
+                //For longer distance in X direction, we change the  gains and speed.
+                   setPIDGainsForRampUpDown();
+                   myNerdBOT.setMinMaxSpeeds(0.0, 1);
 
                 //For moving arm and robot together
 
                 myNerdBOT.nerdArm.resetArm();
                 myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION * (pickupDistance), -8.5, 0, false, false, 4); // go to other side of the field
 
-                myNerdBOT.setXPIDGains(0.0025, 0.0, 0.0);
-                myNerdBOT.setYPIDGains(0.0025, 0.0, 0.0);
-                myNerdBOT.setZPIDGains(0.015, 0.0, 0.0);
+               setPIDGainsForShortDistances();
 
             }else{
                 //If it is last block, turn and drop and come back to Park
@@ -201,19 +193,13 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
 //                Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
 
                // myNerdBOT.nerdPidDrive(4.0,-10,90);
-                myNerdBOT.setZPIDGains(0.3, 0.3, 0.0);
-                myNerdBOT.setXPIDGains(0.0025, 0.005, 0.0);
-                myNerdBOT.setYPIDGains(0.0025, 0.005, 0.0);
+                setPIDGainsForRampUpDown();
                 myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-20,X_DIRECTION*90,false,false,4);
 
-                myNerdBOT.setXPIDGains(0.0025, 0.0, 0.0);
-                myNerdBOT.setYPIDGains(0.0025, 0.0, 0.0);
-                myNerdBOT.setZPIDGains(0.015, 0.0, 0.0);
+             setPIDGainsForShortDistances();
             }
 
-            myNerdBOT.setZPIDGains(0.015, 0.0, 0.0);
-            myNerdBOT.setXPIDGains(0.0025, 0.0, 0.0);
-            myNerdBOT.setYPIDGains(0.0025, 0.0, 0.0);
+           setPIDGainsForShortDistances();
 
         }
     }
@@ -261,7 +247,16 @@ public void stonesOrder(double Skystone_Position) {
     }
 
 }
-
+    public void setPIDGainsForRampUpDown() {
+        myNerdBOT.setZPIDGains(0.3, 0.3, 0.0);
+        myNerdBOT.setXPIDGains(0.0025, 0.005, 0.0);
+        myNerdBOT.setYPIDGains(0.0025, 0.005, 0.0);
+    }
+    public void setPIDGainsForShortDistances() {
+        myNerdBOT.setXPIDGains(0.0025, 0.0, 0.0);
+        myNerdBOT.setYPIDGains(0.0025, 0.0, 0.0);
+        myNerdBOT.setZPIDGains(0.015, 0.0, 0.0);
+    }
 
 }
 
