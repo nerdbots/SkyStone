@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 public class NerdArmMove {
     
-    private DcMotor rearMotor;
-    private DcMotor frontMotor;
+    public DcMotor rearMotor;
+    public DcMotor frontMotor;
     
     private HardwareMap hardwareMap;
     LinearOpMode opmode;
@@ -42,14 +42,14 @@ public class NerdArmMove {
     private ElapsedTime RPIDTime = new ElapsedTime();
     private ElapsedTime PIDTime = new ElapsedTime();
     
-    private ElapsedTime Timeout = new ElapsedTime();
+    public ElapsedTime Timeout = new ElapsedTime();
     
     private double RPrevError = 0;
     private double FPrevError = 0;
     private double RTotalError = 0;
     private double FTotalError = 0;
-    private double RSpeed = 0;
-    private double FSpeed = 0;
+    public double RSpeed = 0;
+    public double FSpeed = 0;
     private double FkP = 0.012; //0.012
     private double FkI = 0.001; //0.006
     private double FkD = 0.001;//0.0012
@@ -61,7 +61,7 @@ public class NerdArmMove {
     private double MaxSpeedR = 0.8;
     private double MaxSpeedF = 0.5;
 
-    private double MaxTimeOut = 0.5;
+    public double MaxTimeOut = 0.5;
     
     private boolean EndConditionArmF = false;
     private boolean EndConditionArmR = false;
@@ -179,12 +179,28 @@ public class NerdArmMove {
             EndConditionArmF = EndConditionArm;
             }
             //set previous error to error
-            
-            
+
             //add telemetry
-            
-            
+
     
+        }
+
+        public void resetArm(){
+
+            this.RPrevError = 0;
+            this.FPrevError = 0;
+            this.RTotalError = 0;
+            this.FTotalError = 0;
+            this.RSpeed = 0;
+            this.FSpeed = 0;
+            this.EndConditionArmF = false;
+            this.EndConditionArmR = false;
+            this.Timeout.reset();
+
+            this.FPIDTime.reset();
+            this.RPIDTime.reset();
+            this.Timeout.reset();
+
         }
         
 }

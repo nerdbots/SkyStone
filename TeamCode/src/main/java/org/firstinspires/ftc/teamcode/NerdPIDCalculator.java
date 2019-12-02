@@ -148,8 +148,9 @@ public class NerdPIDCalculator{
         dOutput = deltaTime > 0.0? kD*(deviceInput - prevDeviceInput)/(deltaTime * 1000): 0.0;
         prevDeviceInput = deviceInput;
 
-        //Total PID output
-        output = pOutput + iOutput + dOutput;
+        //Total PID output.
+        //Since we are using device input instead of error for calculating dOutput, we make it negative.
+        output = pOutput + iOutput - dOutput;
 
         if (debugFlag)
             RobotLog.d("NerdPIDCalculator - %s - %s : prevError |  currentError | totalError | currTime | deltaTime | pOutput | iOutput |dOutput |output",
