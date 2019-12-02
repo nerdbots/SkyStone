@@ -30,6 +30,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -45,7 +47,7 @@ import com.qualcomm.robotcore.util.RobotLog;
  */
 @Autonomous(name="VuforiaFineTune_V11262019", group="Final")
 
-//@Disabled
+@Disabled
 
 public class VuforiaFineTune_11262019 extends LinearOpMode {
 
