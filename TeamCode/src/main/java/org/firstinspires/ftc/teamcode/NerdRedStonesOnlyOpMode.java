@@ -48,7 +48,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 public class NerdRedStonesOnlyOpMode extends LinearOpMode {
     private NerdBOT myNerdBOT ;
     private NerdArmMove Arm;
-    private  double speed = 0.4;
     private double Skystone_Position = 0;
     private double position_run3_x = 82.0;
     private double offset_x_run3 = 0;

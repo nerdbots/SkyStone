@@ -139,7 +139,7 @@ public class VuforiaFindLocation{
         boolean targetVisible = false;
         targetsSkyStone.activate();
         runtime = new ElapsedTime();
-        while (!targetVisible && runtime.seconds() <= 1) {
+        while (!targetVisible && runtime.seconds() <= 0.5) {
             // check all the trackable targets to see which one (if any) is visible.
             for (VuforiaTrackable trackable : allTrackables) {
 
@@ -198,7 +198,7 @@ public class VuforiaFindLocation{
                 this.opmode.telemetry.addData("Visible Target", "none");
                 this.opmode.telemetry.update();
                 SkyStoneXYP[0] = 8.0;
-                SkyStoneXYP[1] = -14.5;
+                SkyStoneXYP[1] = -15.5;
                 positionCase = 4;
 
             }

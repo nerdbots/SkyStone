@@ -116,7 +116,7 @@ public class NerdBOT{
     private double rampDownMaxSpeedLimit = 0.5; //Lower limit for Max speed while ramping down.
     private int rampDownStartTicks = 500;
     boolean  settlingtimeInitiated = false;
-    private double RAMPDOWN_MIN_SPEED=0.3;
+    private double RAMPDOWN_MIN_SPEED=0.4;
 
     //For ARM
 
@@ -424,6 +424,7 @@ public class NerdBOT{
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
+
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
@@ -435,7 +436,6 @@ public class NerdBOT{
         this.touchLeft = this.hardwareMap.touchSensor.get("touchL");
         this.touchRight = this.hardwareMap.touchSensor.get("touchR");
         this.touchBack = this.hardwareMap.touchSensor.get("touchB");
-
 
 
     }

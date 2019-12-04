@@ -50,14 +50,14 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
     private NerdArmMove Arm;
     private double[] SkystoneLocationArray = new double[3];
     boolean debugFlag = false;
-    private double foundation_distance=90.0;
+    private double foundation_distance=88.0;
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
     private VuforiaFindLocation VFC;
     double Skystone_Position=2;
-    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=20.0;
-    private final double ARM_OFFSET=0.0;
+    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=21.0;
+    private final double ARM_OFFSET=2.5;
 
     @Override
     public void runOpMode() {
@@ -73,6 +73,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
         VFC.initVuforia();
 
         //Initialize the PID Calculators
+
         myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
         myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
         myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0, debugFlag);
@@ -114,11 +115,11 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
 
             }
             else if (dropNumber == MAX_BLOCK_DROPS){
-                myNerdBOT.nerdPidDrive(0, 8.0, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(0, 9.5, 0.0, false, false);
 
             }
             else{
-                myNerdBOT.nerdPidDrive(0, 7.0, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(0, 8.0, 0.0, false, false);
 
             }
             //Pickup the block
@@ -140,12 +141,12 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             //For longer distance in X direction, we change the  gains and speed.
             setPIDGainsForRampUpDown();
             myNerdBOT.setMinMaxSpeeds(0.0,1);
-            double ydistance = -8.0;
+            double ydistance = -9.5;
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance-1;
 
             myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
 
-            //Reset Z PID gains for shorter travel in Y direction
+            //Reset  PID gains for shorter travel in Y direction
 
             setPIDGainsForShortDistances();
 
@@ -165,11 +166,12 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
                     nextSkyStone = skyStonesMap.get(dropNumber + 1);
                     pickupDistance = foundation_distance + X_DIRECTION*nextSkyStone.getX_offset()- ARM_OFFSET;
 
-                //For longer distance in X direction, we change the Z gains and speed.
+                //For longer distance in X direction, we change the  gains and speed.
                  setPIDGainsForRampUpDown();
                  myNerdBOT.setMinMaxSpeeds(0.0, 1);
 
                 //For moving arm and robot together
+
                 myNerdBOT.nerdArm.resetArm();
                 myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION * (pickupDistance), -8.5, 0, false, false, 4); // go to other side of the field
 
@@ -188,7 +190,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
 
                // myNerdBOT.nerdPidDrive(4.0,-10,90);
                 setPIDGainsForRampUpDown();
-                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-20,X_DIRECTION*90,false,false,4);
+                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
 
                 setPIDGainsForShortDistances();
             }

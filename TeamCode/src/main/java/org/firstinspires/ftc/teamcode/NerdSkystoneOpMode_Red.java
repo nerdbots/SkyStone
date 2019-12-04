@@ -52,15 +52,14 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
     private NerdArmMove Arm;
     private double[] SkystoneLocationArray = new double[3];
     boolean debugFlag = false;
-    private double foundation_distance=90.0;
+    private double foundation_distance=88.0;
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = -1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
     private VuforiaFindLocation VFC;
     double Skystone_Position=2;
-    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=20.0;
-    private final double ARM_OFFSET=0.0;
-
+    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=21.0;
+    private final double ARM_OFFSET=1.0;
     @Override
     public void runOpMode() {
 
@@ -117,11 +116,11 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
 
             }
             else if (dropNumber == MAX_BLOCK_DROPS){
-                myNerdBOT.nerdPidDrive(0, 8.0, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(0, 9.5, 0.0, false, false);
 
             }
             else{
-                myNerdBOT.nerdPidDrive(0, 7.0, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(0, 8.0, 0.0, false, false);
 
             }
             //Pickup the block
@@ -145,7 +144,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
             setPIDGainsForRampUpDown();
             myNerdBOT.setMinMaxSpeeds(0.0,1);
 
-            double ydistance = -8.0;
+            double ydistance = -7.0;
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance-1;
 
             myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
@@ -187,14 +186,13 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
                 myNerdBOT.nerdPidTurn(X_DIRECTION*90);
 
                 //Drop the blocks
-//                Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
                 Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
 //                Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
 //                Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
 
                // myNerdBOT.nerdPidDrive(4.0,-10,90);
                 setPIDGainsForRampUpDown();
-                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-20,X_DIRECTION*90,false,false,4);
+                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
 
              setPIDGainsForShortDistances();
             }
@@ -248,7 +246,7 @@ public void stonesOrder(double Skystone_Position) {
 
 }
     public void setPIDGainsForRampUpDown() {
-        myNerdBOT.setZPIDGains(0.3, 0.3, 0.0);
+        myNerdBOT.setZPIDGains(0.35, 0.35, 0.0);
         myNerdBOT.setXPIDGains(0.0025, 0.005, 0.0);
         myNerdBOT.setYPIDGains(0.0025, 0.005, 0.0);
     }

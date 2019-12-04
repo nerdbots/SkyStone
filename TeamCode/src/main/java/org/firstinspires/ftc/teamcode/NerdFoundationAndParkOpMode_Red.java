@@ -54,10 +54,10 @@ public class NerdFoundationAndParkOpMode_Red extends LinearOpMode {
 
     //Things to be changed depending on dominant alliance partner (for parking and distance to foundation)
     private final long SLEEP_TIME = 0;
-    private final double X_DISTANCE_TO_FOUNDATION = 0.0;
-    private final double Y_DISTANCE_TO_FOUNDATION = 24.0;
+    private final double X_DISTANCE_TO_FOUNDATION = 6.0;
+    private final double Y_DISTANCE_TO_FOUNDATION = 32.0;
     private final double Z_ANGLE_FOUNDATION = 0.0;
-    private final double X_DISTANCE_TO_PARKING = 36.0;
+    private final double X_DISTANCE_TO_PARKING = 26.0;
     private final double Y_DISTANCE_TO_PARKING = 0.0;
     private final double Z_ANGLE_PARKING = 0.0;
     private final double FORWARD_ON_PARKING_LINE = 0.0;
@@ -96,12 +96,20 @@ public class NerdFoundationAndParkOpMode_Red extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run1");
 
 
-        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, true, false);
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*-X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, false, false);
         Arm.UseTheForce();
         myNerdBOT.nerdPidDrive( 0.0, -36.0, 0, true, false);
         Arm.ArmLoop(-10,7, 0.5, 0.5);
-        myNerdBOT.nerdPidDrive( X_DIRECTION*X_DISTANCE_TO_PARKING, Y_DISTANCE_TO_PARKING, Z_ANGLE_PARKING, true, false);
-        myNerdBOT.nerdPidDrive( 0.0, FORWARD_ON_PARKING_LINE, 0, true, false);
+        myNerdBOT.nerdPidDrive( X_DIRECTION*30, 0, 0, false, false);
+//        Arm.UseTheForce();
+//        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0, 12, 0, false, false);
+        myNerdBOT.nerdPidDrive(X_DIRECTION*-12, 0, 0, false, false);
+
+        myNerdBOT.nerdPidDrive(X_DIRECTION*0, -12, 0, false, false);
+        Arm.ArmLoop(-10,7, 0.5, 0.5);
+myNerdBOT.nerdPidDrive(X_DIRECTION*X_DISTANCE_TO_PARKING, Y_DISTANCE_TO_PARKING, Z_ANGLE_PARKING, false, false);
+        myNerdBOT.nerdPidDrive( 0.0, FORWARD_ON_PARKING_LINE, 0, false, false);
 
 
 
