@@ -88,21 +88,21 @@ public class FinalTeleop extends LinearOpMode {
     private double RDerror = 0;
     private double ZDerror = 0;
     
-    private double FkP = 0.012; //0.012
-    private double FkI = 0.001; //0.001
-    private double FkD = 0.001;//0.001
+    private double FkP = 0.01; //0.012
+    private double FkI = 0.000; //0.001
+    private double FkD = 0.00;//0.001
         
-    private double RkP = 0.0085; //0.0085
+    private double RkP = 0.01; //0.0085
     private double RkI = 0.000; //0.000
-    private double RkD = 0.0009;//0.0009
+    private double RkD = 0.000;//0.0009
     
-    private double ZkP = 0.0321; //0.0321
+    private double ZkP = 0.015; //0.0321
     private double ZkI = 0.000; //0.000
-    private double ZkD = 0.00535;//0.00535
+    private double ZkD = 1.4;//0.00535
 
     
-    private double REV = -14;
-    private double FEV = 7;
+    private double REV = 0;
+    private double FEV = 0;
     private double ZTar = 0;
     
 
@@ -178,7 +178,7 @@ public class FinalTeleop extends LinearOpMode {
         double zMag = 0;
         
         double mult = 1; //THIS IS SPEED
-        double multZ = 0.3; 
+        double multZ = 0.3;
         
         double power = 1;
         double upMult = 1;
@@ -201,7 +201,7 @@ public class FinalTeleop extends LinearOpMode {
         
         waitForStart();
 
-
+        resetAngle();
 
         FPIDTime.reset();
         RPIDTime.reset();
@@ -210,6 +210,8 @@ public class FinalTeleop extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+
             if(gamepad2.left_stick_x != 0 || gamepad2.left_stick_y != 0) {
                 joyX = gamepad2.left_stick_x;
                 joyY = gamepad2.left_stick_y;
@@ -218,7 +220,19 @@ public class FinalTeleop extends LinearOpMode {
                 joyY = gamepad1.left_stick_y;
             }
 
-
+            if(gamepad1.dpad_up || gamepad2.dpad_up){
+                joyX = 0;
+                joyY = -1;
+            } else if(gamepad1.dpad_down || gamepad2.dpad_down){
+                joyX = 0;
+                joyY = 1;
+            } else if(gamepad1.dpad_left || gamepad2.dpad_left){
+                joyX = -1;
+                joyY = 0;
+            } else if(gamepad1.dpad_right || gamepad2.dpad_right){
+                joyX = 1;
+                joyY = 0;
+            }
 
 
             if (gamepad1.a) {
@@ -226,27 +240,35 @@ public class FinalTeleop extends LinearOpMode {
                 
                 
             }
-            /*if (gamepad1.b) {
-                BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            if (gamepad1.b) {
+                BNO055IMU.Parameters parametersb = new BNO055IMU.Parameters();
 
-                parameters.mode                = BNO055IMU.SensorMode.IMU;
-                parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-                parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-                parameters.loggingEnabled      = false;
-                parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-                parameters.loggingTag          = "IMU";
-                parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+                parametersb.mode                = BNO055IMU.SensorMode.IMU;
+                parametersb.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+                parametersb.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                parametersb.loggingEnabled      = false;
+                parametersb.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+                parametersb.loggingTag          = "IMU";
+                parametersb.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-                imu.initialize(parameters);
+                imu.initialize(parametersb);
 
             }
-*/
             zMag = (joyX * joyX) + (joyY * joyY);
             
             
             if(Math.sqrt(zMag) > 0.5) {
                 ZTar = Math.atan2(-joyX, -joyY)*180/3.14159;
                 
+            }
+
+
+            if(gamepad1.right_bumper) {
+                multZ = 0.3;
+                mult = 0.3;
+            } else {
+                multZ = 0.3;
+                mult = 1;
             }
             
             
@@ -272,33 +294,38 @@ public class FinalTeleop extends LinearOpMode {
             frontRightMotor.setPower(BMP * mult);
             
             if(gamepad2.a){ //pick up
-                REV = -160;
-                FEV = 25;
+                REV = -210;
+                FEV = -10;
                 MaxSpeedR = 0.8; //0.8
                 MaxSpeedF = 0.5; // 0.5
-            } else if(gamepad2.b) { //grab
-                REV = -160;
-                FEV = 143;
+            } else if(gamepad2.b) { //grab/fast drop
+                REV = -210;
+                FEV = 160;
                 MaxSpeedR = 0.5; //0.5
-                MaxSpeedF = 0.5; //0.5
-            } else if(gamepad2.y) { //drop
-                REV = -60; 
-                FEV = 135;
-                MaxSpeedR = 0.2; // 0.2
-                MaxSpeedF = 0.6; //0.6
-            } else if(gamepad2.x) { //home
-                REV = -10;
-                FEV = 10;
-                MaxSpeedR = 0.8; // 0.6
-                MaxSpeedF = 0.2; // 0.2
-            } else if(gamepad2.right_bumper) { //drop 2
-                REV = -50;
-                FEV = 110;
-                MaxSpeedR = 0.2; //.2
-                MaxSpeedF = 0.6; //.6
+                MaxSpeedF = 1; //0.5
+            } else if(gamepad2.y) { //slow drop
+                REV = 0;
+                FEV = 160;
+                MaxSpeedR = 0.2; //0.5
+                MaxSpeedF = 1; //0.5
+            } else if(gamepad2.x) { //home pickup
+                REV = -210;
+                FEV = -10;
+                MaxSpeedR = 0.2; // 0.6
+                MaxSpeedF = 1; // 0.2
+            } else if(gamepad2.right_bumper) { //home
+                REV = 10;
+                FEV = -10;
+                MaxSpeedR = 0.5; // 0.6
+                MaxSpeedF = 0.5; // 0.2
             } else if(gamepad2.left_bumper) { //foundation
-            rearMotor.setPower(0.5);
-            frontMotor.setPower(0.5);
+                REV = -210;
+                FEV = -10;
+                MaxSpeedR = 1; //0.8
+                MaxSpeedF = 0.5; // 0.5
+            } else {
+                rearMotor.setPower(0);
+                frontMotor.setPower(0);
             }
             
             
