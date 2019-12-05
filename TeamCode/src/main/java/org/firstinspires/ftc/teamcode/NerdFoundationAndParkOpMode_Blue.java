@@ -28,6 +28,7 @@
  */
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -44,7 +45,7 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdFoundationAndParkOpMode_Blue", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT ;
 
@@ -54,14 +55,14 @@ public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
 
     //Things to be changed depending on dominant alliance partner (for parking and distance to foundation)
     private final long SLEEP_TIME = 0;
-    private final double X_DISTANCE_TO_FOUNDATION = 0.0;
-    private final double Y_DISTANCE_TO_FOUNDATION = 24.0;
+    private final double X_DISTANCE_TO_FOUNDATION = 6.0;
+    private final double Y_DISTANCE_TO_FOUNDATION = 32.0;
     private final double Z_ANGLE_FOUNDATION = 0.0;
-    private final double X_DISTANCE_TO_PARKING = 36.0;
+    private final double X_DISTANCE_TO_PARKING = 26.0;
     private final double Y_DISTANCE_TO_PARKING = 0.0;
     private final double Z_ANGLE_PARKING = 0.0;
     private final double FORWARD_ON_PARKING_LINE = 0.0;
-    private final double X_DIRECTION=1;
+    private final double X_DIRECTION=1; //1 for Red (positive right direction)
 
     @Override
     public void runOpMode() {
@@ -71,7 +72,7 @@ public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
 
         myNerdBOT.setDebug(debugFlag);
 
-            //Initialize Hardware
+        //Initialize Hardware
         myNerdBOT.initializeHardware();
         Arm.initHardware();
         //Initialize the PID Calculators
@@ -80,7 +81,7 @@ public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
         myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0,debugFlag);
         myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 0.02535,debugFlag);
         //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
-        myNerdBOT.setMinMaxSpeeds(0.0,0.5);
+        myNerdBOT.setMinMaxSpeeds(0.0,0.6);
 
 
         telemetry.addData("Init", "Completed");
@@ -88,6 +89,8 @@ public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
 
 
         waitForStart();
+        myNerdBOT.resetAngle();
+
         sleep(SLEEP_TIME);
 
 
@@ -96,16 +99,15 @@ public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run1");
 
 
-        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, true, false);
+        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, false, false);
         Arm.UseTheForce();
         myNerdBOT.nerdPidDrive( 0.0, -36.0, 0, true, false);
         Arm.ArmLoop(-10,7, 0.5, 0.5);
-        myNerdBOT.nerdPidDrive( X_DIRECTION*X_DISTANCE_TO_PARKING, Y_DISTANCE_TO_PARKING, Z_ANGLE_PARKING, true, false);
-        myNerdBOT.nerdPidDrive( 0.0, FORWARD_ON_PARKING_LINE, 0, true, false);
+        myNerdBOT.nerdPidDrive( X_DIRECTION*-25, 0, 0, false, false);
+        myNerdBOT.nerdPidDrive( X_DIRECTION*0, 12, 0, false, false);
+        myNerdBOT.nerdPidDrive(X_DIRECTION*12, 0, 0, false, false);
 
-
-
-
+        myNerdBOT.nerdPidDrive(X_DIRECTION*-25, -12, 0, false, false);
 
 
     }

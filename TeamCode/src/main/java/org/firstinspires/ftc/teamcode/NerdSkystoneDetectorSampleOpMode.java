@@ -27,9 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
+
+import java.util.HashMap;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
@@ -44,56 +46,67 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="NerdParkOnlyOpMode", group="Linear Opmode")
+@Autonomous(name="NerdSkystoneDetectorSampleOpMode", group="Linear Opmode")
 @Disabled
-public class NerdParkOnlyOpMode extends LinearOpMode {
-    private NerdBOT myNerdBOT ;
+public class NerdSkystoneDetectorSampleOpMode extends LinearOpMode {
+    private NerdBOT myNerdBOT;
+    private NerdSkyStoneDetector nerdSkyStoneDetector;
+    private  OpenCVSkyStone openCVSkyStoneDetector;
+    private NerdArmMove Arm;
+    private int X_DIRECTION = 1;
 
-    private  double speed = 0.4;
-    boolean debugFlag = true;
+    private boolean debugFlag = false;
 
-    //Things to be changed depending on dominant alliance partner (for parking)
-    private final long SLEEP_TIME = 0;
-    private final double X_DISTANCE = 24.0;
-    private final double Y_DISTANCE = 24.0;
-    private final double Z_ANGLE = 0.0;
 
     @Override
     public void runOpMode() {
-        //Create a NerdBOT object
+
+        int skyStonePosition;
         myNerdBOT = new NerdBOT(this);
-
-        myNerdBOT.setDebug(debugFlag);
-
-            //Initialize Hardware
+        Arm = new NerdArmMove(this);
+       // nerdSkyStoneDetector = new NerdSkyStoneDetector(this);
+        openCVSkyStoneDetector = new OpenCVSkyStone(this);
+        //Initialize Hardware
         myNerdBOT.initializeHardware();
+        Arm.initHardware();
+       // nerdSkyStoneDetector.initNerdStoneDetector();
+        openCVSkyStoneDetector.initOpenCVSkyStone();
         //Initialize the PID Calculators
-        myNerdBOT.initializeXPIDCalculator(0.0025, 0.005, 0.0, debugFlag);
-        myNerdBOT.initializeYPIDCalculator(0.0025, 0.005, 0.0,debugFlag);
-        myNerdBOT.initializeZPIDCalculator(0.3, 0.3, 0.0,debugFlag);
-        myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 1.4,debugFlag);//0.02535
-        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
-        myNerdBOT.setMinMaxSpeeds(0.0,0.5);
 
+        myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
+        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
+        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0, debugFlag);
+        myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 1.4,debugFlag);//0.02535
+
+        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
+        myNerdBOT.setMinMaxSpeeds(0.0, 0.4);
 
         telemetry.addData("Init", "Completed");
         telemetry.update();
 
-
         waitForStart();
-        sleep(SLEEP_TIME);
 
-     myNerdBOT.setMinMaxSpeeds(0,1);
-        //UNITS ARE IN INCHES
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run1");
-       // myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
-     // myNerdBOT.nerdPidDriveWithRampUpDown(-85,0,0);
-       // myNerdBOT.nerdPidDriveWithRampUpDown(-96,-8,0);
-      //  myNerdBOT.nerdPidDriveWithRampUpDown(85,0,0);
+        //double [] skyStoneXYPValues;
 
-       // myNerdBOT.nerdPidTurn(90);
-        myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(0, -40, 0, false,false,4);
+       // myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 16.0, 0.0);
 
+//        skyStoneXYPValues = nerdSkyStoneDetector.detectSkyStone();
+//
+//        telemetry.addData("OpMode Stone Position X", skyStoneXYPValues[0]);
+//        telemetry.addData("OpMode Stone Position Y", skyStoneXYPValues[1]);
+//        telemetry.addData("OpMode Stone Position", skyStoneXYPValues[2]);
+//        telemetry.update();
+
+        skyStonePosition = openCVSkyStoneDetector.findPosition();
+
+        telemetry.addData("Sky Stone Position", skyStonePosition);
+        telemetry.update();
+
+        sleep(50000);
     }
+
+
+
+
 }
+

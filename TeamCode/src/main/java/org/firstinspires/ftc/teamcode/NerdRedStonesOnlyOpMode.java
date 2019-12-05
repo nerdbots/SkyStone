@@ -30,6 +30,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -44,7 +46,7 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="Nerd_Final_Auton_StonesOnly_Red", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdRedStonesOnlyOpMode extends LinearOpMode {
     private NerdBOT myNerdBOT ;
     private NerdArmMove Arm;
