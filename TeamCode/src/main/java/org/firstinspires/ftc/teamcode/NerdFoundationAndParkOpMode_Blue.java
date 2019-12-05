@@ -28,6 +28,7 @@
  */
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -44,7 +45,7 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdFoundationAndParkOpMode_Blue", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT ;
 

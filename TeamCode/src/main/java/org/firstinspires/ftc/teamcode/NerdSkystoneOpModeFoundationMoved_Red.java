@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import java.util.HashMap;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -47,7 +48,7 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneOpModeFoundationMoved_Red", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdSkystoneOpModeFoundationMoved_Red extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdArmMove Arm;

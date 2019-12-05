@@ -32,6 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.HashMap;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -46,7 +47,7 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneDetectorSampleOpMode", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdSkystoneDetectorSampleOpMode extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdSkyStoneDetector nerdSkyStoneDetector;
