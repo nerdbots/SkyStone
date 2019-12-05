@@ -90,7 +90,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
         myNerdBOT.resetAngle();
 
         //Move forward and detect Skystone
-        myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 16.0, 0.0);
+        //myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 16.0, 0.0);
         //SkystoneLocationArray = VFC.vuforia();
         Skystone_Position = VFC.findPosition();
 

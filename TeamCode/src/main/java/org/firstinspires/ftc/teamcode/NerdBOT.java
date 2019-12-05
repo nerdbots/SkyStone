@@ -63,7 +63,7 @@ public class NerdBOT{
     private boolean debugFlag=false;
 
 
-    Orientation angles;
+    double angles;
     Acceleration gravity;
 
     Orientation             lastAngles = new Orientation();
@@ -298,8 +298,10 @@ public class NerdBOT{
 
         while (!this.opmode.isStopRequested() &&  runtime.seconds() <= 1.0) {
 
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                pidvalue = turnPIDCalculator.getOutput(angles.firstAngle, 1);
+       // angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles = getZAngleValue();
+
+            pidvalue = turnPIDCalculator.getOutput(angles, 1);
 
 
                 leftSpeedB =  -pidvalue;
