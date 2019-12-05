@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -60,6 +61,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class NerdBOT{
 
     private boolean debugFlag=false;
+
+
+    Orientation angles;
+    Acceleration gravity;
+
+    Orientation             lastAngles = new Orientation();
+
+    double globalAngle = 0.0;
+    //made change
+
+
 
     // Robot has 4 motors
 
@@ -271,8 +283,7 @@ public class NerdBOT{
     public void nerdPidTurn(double targetAngle) {
 
         final String funcName = "nerdPidTurn";
-
-        Orientation angles;
+        //made change here
         double pidvalue;
         double [] motorPowers;
 
@@ -436,6 +447,8 @@ public class NerdBOT{
         this.touchLeft = this.hardwareMap.touchSensor.get("touchL");
         this.touchRight = this.hardwareMap.touchSensor.get("touchR");
         this.touchBack = this.hardwareMap.touchSensor.get("touchB");
+
+        resetAngle();
 
 
     }
@@ -630,9 +643,28 @@ public class NerdBOT{
 
     }
 
-    public  double getZAngleValue(){
+    public  double getZAngleValue(){ //made change here
 
-        return this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    public void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
     }
 
   public  void setMinMaxSpeeds(double minSpeed, double maxSpeed){

@@ -54,7 +54,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
-    private VuforiaFindLocation VFC;
+    private OpenCVSkyStone VFC;
     double Skystone_Position=2;
     private final double FOUNDATION_OFFSET_FOR_LAST_DROP=21.0;
     private final double ARM_OFFSET=2.5;
@@ -64,13 +64,15 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
 
         myNerdBOT = new NerdBOT(this);
         Arm = new NerdArmMove(this);
-        VFC = new VuforiaFindLocation(this);
+        //VFC = new VuforiaFindLocation(this);
+        VFC = new OpenCVSkyStone(this);
+
         myNerdBOT.setDebug(debugFlag);
 
         //Initialize Hardware
         myNerdBOT.initializeHardware();
         Arm.initHardware();
-        VFC.initVuforia();
+        VFC.initOpenCVSkyStone();
 
         //Initialize the PID Calculators
 
@@ -86,10 +88,12 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        myNerdBOT.resetAngle();
+
         //Move forward and detect Skystone
         myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 16.0, 0.0);
-        SkystoneLocationArray = VFC.vuforia();
-        Skystone_Position = SkystoneLocationArray[2];
+       // SkystoneLocationArray = VFC.vuforia();
+        Skystone_Position = VFC.findPosition();
 
         //Based on the Skystone position detected by vuforia, set the pickup order and offsets
         stonesOrder(Skystone_Position);
@@ -111,7 +115,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             if(dropNumber == 1) {
                 //Only first run we will use X and Y from vuforia output. We add
                 // the offsets based on positions to the total pickup distance for the next stone
-                myNerdBOT.nerdPidDrive(SkystoneLocationArray[0], SkystoneLocationArray[1], 0.0, false, false);
+                myNerdBOT.nerdPidDrive(currentSkyStone.getX_offset(), 26, 0.0, false, false);
 
             }
             else if (dropNumber == MAX_BLOCK_DROPS){

@@ -43,9 +43,9 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="Nerd_Final_Auton_Red", group="Final")
+@Autonomous(name="NerdFullAuton_Blue", group="Final")
 //@Disabled
-public class NerdRedAllianceAutonOpMode extends LinearOpMode {
+public class NerdFullAuton_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT ;
     private NerdArmMove Arm;
     private double Skystone_Position = 0;
@@ -55,23 +55,24 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
     private  double drop_2_offset = 0;
     private double foundation_Offset = 0;
     boolean debugFlag = false;
-    static private VuforiaFindCase2 VFC;
+    static private OpenCVSkyStone VFC;
     private double x_offset_2 = 0;
 
-    private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
+    private final int X_DIRECTION = 1; // 1 For Blue Alliance, -1 for Red
     @Override
     public void runOpMode() {
         //Create a NerdBOT object
         myNerdBOT = new NerdBOT(this);
         Arm = new NerdArmMove(this);
         myNerdBOT.setDebug(debugFlag);
-        VFC = new VuforiaFindCase2(this);
+        //VFC = new VuforiaFindCase2(this);
+        VFC = new OpenCVSkyStone(this);
 
 
         //Initialize Hardware
         myNerdBOT.initializeHardware();
         Arm.initHardware();
-        VFC.initVuforia();
+        VFC.initOpenCVSkyStone();
         //Initialize the PID Calculators
         myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
         myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
@@ -86,15 +87,16 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
 
 
         waitForStart();
-
+        myNerdBOT.resetAngle();
+        //made change here
 
 
         //UNITS ARE IN INCHES
         if (debugFlag);
             RobotLog.d("NerdSampleOpMode - Run1");
 
-        myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 11.5, 0.0);
-        Skystone_Position = VFC.vuforia();
+        //myNerdBOT.nerdPidDrive(  X_DIRECTION*0.0, 11.5, 0.0);
+        Skystone_Position = VFC.findPosition();
         telemetry.addData("Position Case",Skystone_Position );
         telemetry.update();
         if (debugFlag)
@@ -103,30 +105,30 @@ public class NerdRedAllianceAutonOpMode extends LinearOpMode {
 
         Arm.ArmLoop(-170,7, 0.8, 0.5); // -160, 0.5
 
-        myNerdBOT.setMinMaxSpeeds(0.0,0.3);
+        myNerdBOT.setMinMaxSpeeds(0.0,0.4);
 
 
         if (Skystone_Position == 3) {
-            myNerdBOT.nerdPidDrive( X_DIRECTION*8.0, 14.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*8.0, 26.0, 0.0, false, false);
             offset_x_run3 = 8.0;
             drop_2_offset = -30.0;
             //sleep(2000);
         }
         else if (Skystone_Position == 2 || Skystone_Position == 4) {
-            myNerdBOT.nerdPidDrive( X_DIRECTION*3.0, 14.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*3.0, 26.0, 0.0, false, false);
             offset_x_run3 = 3.0; // 0
             drop_2_offset = 3.0;
             //sleep(2000);
         }
         else if (Skystone_Position == 1) {
-            myNerdBOT.nerdPidDrive( X_DIRECTION*-5.0, 14.5, 0.0, false, false); //13.5
+            myNerdBOT.nerdPidDrive( X_DIRECTION*-5.0, 26.0, 0.0, false, false); //13.5
             offset_x_run3 = -5.0;
             drop_2_offset = -4.0; // -5 cghdzgft
             //sleep(2000);
         }
         else
         {
-            myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 14.5, 0.0, false, false);
+            myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 26.0, 0.0, false, false);
             offset_x_run3 = 0.0;
             drop_2_offset = 2.0;
         }
