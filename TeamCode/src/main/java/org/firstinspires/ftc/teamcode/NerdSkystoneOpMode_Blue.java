@@ -142,9 +142,10 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             if(dropNumber == MAX_BLOCK_DROPS)
                 dropDistance=dropDistance*0.5 + FOUNDATION_OFFSET_FOR_LAST_DROP;
 
-            //For longer distance in X direction, we change the  gains and speed.
+            //For longer distance in X direction, we change the PID gains and speed.
             setPIDGainsForRampUpDown();
             myNerdBOT.setMinMaxSpeeds(0.0,1);
+
             double ydistance = -9.5;
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance-1;
 
@@ -179,7 +180,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
                 myNerdBOT.nerdArm.resetArm();
                 myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION * (pickupDistance), -8.5, 0, false, false, 4); // go to other side of the field
 
-            setPIDGainsForShortDistances();
+                setPIDGainsForShortDistances();
 
             }else{
                 //If it is last block, turn and drop and come back to Park
