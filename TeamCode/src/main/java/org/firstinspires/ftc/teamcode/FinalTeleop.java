@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -55,13 +56,28 @@ public class FinalTeleop extends LinearOpMode {
     private Blinker expansion_Hub_2;
     private DcMotor frontMotor;
     private DcMotor rearMotor;
+    Servo   servoPitch;
+    Servo   servoAngle;
+    DcMotor tapeMotor;
+
+    double  positionPitch = (MAX_POS - MIN_POS) / 2;
+    double  positionAngle = (MAX_POS - MIN_POS) / 2;
+    double  tapeSpeed = 0.0;
     Orientation angles;
     Acceleration gravity;
     
     Orientation             lastAngles = new Orientation();
     
     double globalAngle = 0.0;
-    
+
+
+
+
+    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static final int    CYCLE_MS    =   50;     // period of each cycle
+    static final double MAX_POS     =  1.0;     // Maximum rotational position
+    static final double MIN_POS     =  0.0;     // Minimum rotational position
+
     
     private ElapsedTime FPIDTime = new ElapsedTime();
     
@@ -96,9 +112,9 @@ public class FinalTeleop extends LinearOpMode {
     private double RkI = 0.000; //0.000
     private double RkD = 0.000;//0.0009
     
-    private double ZkP = 0.015; //0.0321
+    private double ZkP = 0.011; //0.0321, 0.015; 0.0225+
     private double ZkI = 0.000; //0.000
-    private double ZkD = 1.4;//0.00535
+    private double ZkD = 0.0016;//0.00535, 1.4, 0.003
 
     
     private double REV = 0;
@@ -121,6 +137,11 @@ public class FinalTeleop extends LinearOpMode {
         rearRightMotor = hardwareMap.get(DcMotor.class, "Rear_Right_Motor");
         frontMotor = hardwareMap.get(DcMotor.class, "frontMotor");
         rearMotor = hardwareMap.get(DcMotor.class, "rearMotor");
+
+        servoPitch = hardwareMap.get(Servo.class, "TurretPitch");
+        servoAngle = hardwareMap.get(Servo.class, "TurretAngle");
+        tapeMotor = hardwareMap.get(DcMotor.class, "TapeMotor");
+
 //        expansion_Hub_1 = hardwareMap.get(Blinker.class, "Expansion Hub 2");
 
 
@@ -178,7 +199,7 @@ public class FinalTeleop extends LinearOpMode {
         double zMag = 0;
         
         double mult = 1; //THIS IS SPEED
-        double multZ = 0.3;
+        double multZ = 0.8;//0.3
         
         double power = 1;
         double upMult = 1;
@@ -212,158 +233,215 @@ public class FinalTeleop extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-            if(gamepad2.left_stick_x != 0 || gamepad2.left_stick_y != 0) {
-                joyX = gamepad2.left_stick_x;
-                joyY = gamepad2.left_stick_y;
+
+            //if(  gamepad2.start) {
+
+
+            if (  gamepad2.right_stick_y < -0.5) {
+                positionPitch += INCREMENT;
+                if (positionPitch >= MAX_POS) {
+                    positionPitch = MAX_POS;
+                }
+            }
+            if (  gamepad2.right_stick_y > 0.5) {
+                positionPitch -= INCREMENT;
+                if (positionPitch <= MIN_POS) {
+                    positionPitch = MIN_POS;
+                }
+            }
+            if (  gamepad2.right_stick_x > 0.5) {
+                positionAngle += INCREMENT;
+                if (positionAngle >= MAX_POS) {
+                    positionAngle = MAX_POS;
+                }
+            }
+            if (  gamepad2.right_stick_x < -0.5) {
+                positionAngle -= INCREMENT;
+                if (positionAngle <= MIN_POS) {
+                    positionAngle = MIN_POS;
+                }
+            }
+            //if (  gamepad2.left_stick_x < -0.1) {
+            //    tapeSpeed =   gamepad2.left_stick_x;
+            //}
+            if (Math.abs(  gamepad2.left_stick_x) > 0.1) {
+                tapeSpeed =   gamepad2.left_stick_x;
             } else {
-                joyX = gamepad1.left_stick_x;
-                joyY = gamepad1.left_stick_y;
+                tapeSpeed = 0;
             }
 
-            if(gamepad1.dpad_up || gamepad2.dpad_up){
-                joyX = 0;
-                joyY = -1;
-            } else if(gamepad1.dpad_down || gamepad2.dpad_down){
-                joyX = 0;
-                joyY = 1;
-            } else if(gamepad1.dpad_left || gamepad2.dpad_left){
-                joyX = -1;
-                joyY = 0;
-            } else if(gamepad1.dpad_right || gamepad2.dpad_right){
-                joyX = 1;
-                joyY = 0;
-            }
+            tapeMotor.setPower(tapeSpeed);
 
-
-            if (gamepad1.a) {
-                resetAngle();
-                
-                
-            }
-            if (gamepad1.b) {
-                BNO055IMU.Parameters parametersb = new BNO055IMU.Parameters();
-
-                parametersb.mode                = BNO055IMU.SensorMode.IMU;
-                parametersb.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-                parametersb.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-                parametersb.loggingEnabled      = false;
-                parametersb.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-                parametersb.loggingTag          = "IMU";
-                parametersb.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-                imu.initialize(parametersb);
-
-            }
-            zMag = (joyX * joyX) + (joyY * joyY);
-            
-            
-            if(Math.sqrt(zMag) > 0.5) {
-                ZTar = Math.atan2(-joyX, -joyY)*180/3.14159;
-                
-            }
-
-
-            if(gamepad1.right_bumper) {
-                multZ = 0.3;
-                mult = 0.3;
-            } else {
-                multZ = 0.3;
-                mult = 1;
-            }
-            
-            
-            CA = (Math.atan2(gamepad1.right_stick_y, -gamepad1.right_stick_x) * 180 / 3.14) + 45;
-            
-            RSA = (CA - getAngle()) * 3.14 / 180;
-            
-            Mag = Math.sqrt((gamepad1.right_stick_y * gamepad1.right_stick_y) + (gamepad1.right_stick_x * gamepad1.right_stick_x));
-            
-            FX = -Math.sin(RSA) * Mag;
-            FY = -Math.cos(RSA) * Mag;
-            
-            
-            LMP = (ZSpeed * multZ) + FX; //multZ will only affect Z. This is because if joypad Z is zero then Z is zero.
-            RMP = (ZSpeed * multZ) - FX;
-            FMP = (ZSpeed * multZ) + FY;
-            BMP = (ZSpeed * multZ) - FY;
-
-            frontLeftMotor.setPower(RMP * mult);
-            rearRightMotor.setPower(LMP * mult);
-
-            rearLeftMotor.setPower(FMP * mult);
-            frontRightMotor.setPower(BMP * mult);
-            
-            if(gamepad2.a){ //pick up
-                REV = -210;
-                FEV = -10;
-                MaxSpeedR = 0.8; //0.8
-                MaxSpeedF = 0.5; // 0.5
-            } else if(gamepad2.b) { //grab/fast drop
-                REV = -210;
-                FEV = 160;
-                MaxSpeedR = 0.5; //0.5
-                MaxSpeedF = 1; //0.5
-            } else if(gamepad2.y) { //slow drop
-                REV = 0;
-                FEV = 160;
-                MaxSpeedR = 0.2; //0.5
-                MaxSpeedF = 1; //0.5
-            } else if(gamepad2.x) { //home pickup
-                REV = -210;
-                FEV = -10;
-                MaxSpeedR = 0.2; // 0.6
-                MaxSpeedF = 1; // 0.2
-            } else if(gamepad2.right_bumper) { //home
-                REV = 10;
-                FEV = -10;
-                MaxSpeedR = 0.5; // 0.6
-                MaxSpeedF = 0.5; // 0.2
-            } else if(gamepad2.left_bumper) { //foundation
-                REV = -210;
-                FEV = -10;
-                MaxSpeedR = 1; //0.8
-                MaxSpeedF = 0.5; // 0.5
-            } else {
-                rearMotor.setPower(0);
-                frontMotor.setPower(0);
-            }
-            
-            
-            
-            PIDArm(rearMotor.getCurrentPosition(), REV, RkP, RkI, RkD, 0);
-            PIDArm(frontMotor.getCurrentPosition(), FEV, FkP, FkI, FkD, 1);
-            
-            PIDArm(getAngle(), ZTar, ZkP, ZkI, ZkD, 67);//CAN BE ANYTHING BUT 0 OR 1
-            
-            rearMotor.setPower(RSpeed);
-            frontMotor.setPower(FSpeed);
-
-                        //add telemetry
-                        
-            
-            
-            telemetry.addData("X", FX);
-            telemetry.addData("Y", FY);
-            telemetry.addData("CA", CA);
-            telemetry.addData("RSA", RSA);
-            telemetry.addData("RA", getAngle());
-
-            telemetry.addData("Rear Encoder Value", rearMotor.getCurrentPosition());
-            telemetry.addData("Front Encoder Value", frontMotor.getCurrentPosition());
-            telemetry.addData("Front Total Error", FTotalError);
-            telemetry.addData("Rear Total Error", RTotalError);
-            telemetry.addData("Rear Previous Error", RPrevError);
-            telemetry.addData("Front Previous Error", FPrevError);
-            telemetry.addData("Rear Speed", RSpeed);
-            telemetry.addData("Rear Speed", FSpeed);
-            telemetry.addData("zMag", zMag);
-            telemetry.addData("ZTar", ZTar);
-            
-            telemetry.addData("Status", "Running");
+            // Display the current value
+            telemetry.addData("Servo Pitch", "%5.2f", positionPitch);
+            telemetry.addData("Servo Angle", "%5.2f", positionAngle);
+            telemetry.addData(">", "Press Stop to end test.");
             telemetry.update();
 
+            // Set the servo to the new position and pause;
+            servoPitch.setPosition(positionPitch);
+            servoAngle.setPosition(positionAngle);
+
+            sleep(CYCLE_MS);
+            idle();
+        //} else {
+
+
+
+
+                if (gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0) {
+                    joyX = gamepad1.left_stick_x;
+                    joyY = gamepad1.left_stick_y;
+                }
+
+                if (gamepad1.dpad_up) {
+                    joyX = 0;
+                    joyY = -1;
+                } else if (gamepad1.dpad_down) {
+                    joyX = 0;
+                    joyY = 1;
+                } else if (gamepad1.dpad_left) {
+                    joyX = -1;
+                    joyY = 0;
+                } else if (gamepad1.dpad_right) {
+                    joyX = 1;
+                    joyY = 0;
+                }
+
+
+                if (gamepad1.a) {
+                    resetAngle();
+                }
+
+
+                if (gamepad1.b) {
+                    BNO055IMU.Parameters parametersb = new BNO055IMU.Parameters();
+
+                    parametersb.mode = BNO055IMU.SensorMode.IMU;
+                    parametersb.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+                    parametersb.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+                    parametersb.loggingEnabled = false;
+                    parametersb.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+                    parametersb.loggingTag = "IMU";
+                    parametersb.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+                    imu.initialize(parametersb);
+
+                }
+
+
+                zMag = (joyX * joyX) + (joyY * joyY);
+
+
+                if (Math.sqrt(zMag) > 0.5) {
+                    ZTar = Math.atan2(-joyX, -joyY) * 180 / 3.14159;
+
+                }
+
+
+                if (gamepad1.right_bumper) {
+                    multZ = 0.3;
+                    mult = 0.3;
+                } else {
+                    multZ = 0.8;
+                    mult = 1;
+                }
+
+
+                CA = (Math.atan2(gamepad1.right_stick_y, -gamepad1.right_stick_x) * 180 / 3.14) + 45;
+
+                RSA = (CA - getAngle()) * 3.14 / 180;
+
+                Mag = Math.sqrt((gamepad1.right_stick_y * gamepad1.right_stick_y) + (gamepad1.right_stick_x * gamepad1.right_stick_x));
+
+                FX = -Math.sin(RSA) * Mag;
+                FY = -Math.cos(RSA) * Mag;
+
+
+                LMP = (ZSpeed * multZ) + FX; //multZ will only affect Z. This is because if joypad Z is zero then Z is zero.
+                RMP = (ZSpeed * multZ) - FX;
+                FMP = (ZSpeed * multZ) + FY;
+                BMP = (ZSpeed * multZ) - FY;
+
+                frontLeftMotor.setPower(RMP * mult);
+                rearRightMotor.setPower(LMP * mult);
+
+                rearLeftMotor.setPower(FMP * mult);
+                frontRightMotor.setPower(BMP * mult);
+
+                if (gamepad2.a) { //pick up
+                    REV = -210;
+                    FEV = -10;
+                    MaxSpeedR = 0.8; //0.8
+                    MaxSpeedF = 0.5; // 0.5
+                } else if (gamepad2.b) { //grab/fast drop
+                    REV = -210;
+                    FEV = 160;
+                    MaxSpeedR = 0.5; //0.5
+                    MaxSpeedF = 1; //0.5
+                } else if (gamepad2.y) { //slow drop
+                    REV = 0;
+                    FEV = 160;
+                    MaxSpeedR = 0.1; //0.5
+                    MaxSpeedF = 1; //0.5
+                } else if (gamepad2.x) { //home pickup
+                    REV = 210;//NEGATIVE TO POSITIVE
+                    FEV = -10;
+                    MaxSpeedR = 1; // 0.6
+                    MaxSpeedF = 0.2; // 0.2
+                } else if (gamepad2.right_bumper) { //home
+                    REV = 10;
+                    FEV = -10;
+                    MaxSpeedR = 0.5; // 0.6
+                    MaxSpeedF = 0.5; // 0.2
+                } else if (gamepad2.left_bumper) { //foundation
+                    REV = -210;
+                    FEV = -10;
+                    MaxSpeedR = 1; //0.8
+                    MaxSpeedF = 0.5; // 0.5
+                } else {
+                    rearMotor.setPower(0);
+                    frontMotor.setPower(0);
+                    MaxSpeedR = 0;
+                    MaxSpeedF = 0;
+
+                }
+
+
+                PIDArm(rearMotor.getCurrentPosition(), REV, RkP, RkI, RkD, 0);
+                PIDArm(frontMotor.getCurrentPosition(), FEV, FkP, FkI, FkD, 1);
+
+                PIDArm(getAngle(), ZTar, ZkP, ZkI, ZkD, 67);//CAN BE ANYTHING BUT 0 OR 1
+
+                rearMotor.setPower(RSpeed);
+                frontMotor.setPower(FSpeed);
+
+                //add telemetry
+
+
+                telemetry.addData("X", FX);
+                telemetry.addData("Y", FY);
+                telemetry.addData("CA", CA);
+                telemetry.addData("RSA", RSA);
+                telemetry.addData("RA", getAngle());
+
+                telemetry.addData("Rear Encoder Value", rearMotor.getCurrentPosition());
+                telemetry.addData("Front Encoder Value", frontMotor.getCurrentPosition());
+                telemetry.addData("Front Total Error", FTotalError);
+                telemetry.addData("Rear Total Error", RTotalError);
+                telemetry.addData("Rear Previous Error", RPrevError);
+                telemetry.addData("Front Previous Error", FPrevError);
+                telemetry.addData("Rear Speed", RSpeed);
+                telemetry.addData("Rear Speed", FSpeed);
+                telemetry.addData("zMag", zMag);
+                telemetry.addData("ZTar", ZTar);
+
+                telemetry.addData("Status", "Running");
+                telemetry.update();
+            }
+
         }
-    }
+
     
                                                      //0 is rearMotor 1 is frontMotor \/
         public void PIDArm(double EV, double TPos, double kP, double kI, double kD, int motor) {
