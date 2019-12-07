@@ -149,7 +149,7 @@ public class FinalTeleop extends LinearOpMode {
 
 
 
-
+/*
 
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -166,10 +166,10 @@ public class FinalTeleop extends LinearOpMode {
 
 
         resetAngle();
+        */
         
         
-        
-        
+        /*
         rearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sleep(500);
@@ -177,7 +177,7 @@ public class FinalTeleop extends LinearOpMode {
         rearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
+*/
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
