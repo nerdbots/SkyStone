@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //@Disabled
 @TeleOp(name="Final_TeleOp", group="Final")
 public class FinalTeleop extends LinearOpMode {
-    private BNO055IMU imu;
+    private BNO055IMU imu=null;
     private DcMotor frontRightMotor;
     private DcMotor rearRightMotor;
     private DcMotor frontLeftMotor;
@@ -60,16 +60,16 @@ public class FinalTeleop extends LinearOpMode {
     Servo   servoAngle;
     DcMotor tapeMotor;
 
-    double  positionPitch = (MAX_POS - MIN_POS) / 2;
-    double  positionAngle = (MAX_POS - MIN_POS) / 2;
+    double  positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
+    double  positionAngle = 0.71;  //(MAX_POS - MIN_POS) / 2;
     double  tapeSpeed = 0.0;
+
     Orientation angles;
     Acceleration gravity;
     
-    Orientation             lastAngles = new Orientation();
+    Orientation             lastAngles/* = new Orientation()*/;
     
-    double globalAngle = 0.0;
-
+    double globalAngle;
 
 
 
@@ -142,6 +142,12 @@ public class FinalTeleop extends LinearOpMode {
         servoAngle = hardwareMap.get(Servo.class, "TurretAngle");
         tapeMotor = hardwareMap.get(DcMotor.class, "TapeMotor");
 
+
+      //  globalAngle = 0;/imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+
+
+
 //        expansion_Hub_1 = hardwareMap.get(Blinker.class, "Expansion Hub 2");
 
 
@@ -165,7 +171,7 @@ public class FinalTeleop extends LinearOpMode {
         imu.initialize(parameters);
 
 
-        resetAngle();
+    //    resetAngle();
         */
         
         
@@ -219,10 +225,11 @@ public class FinalTeleop extends LinearOpMode {
             telemetry.update();
         }
 
+
         
         waitForStart();
 
-        resetAngle();
+     //   resetAngle();
 
         FPIDTime.reset();
         RPIDTime.reset();
@@ -309,7 +316,7 @@ public class FinalTeleop extends LinearOpMode {
                 }
 
 
-                if (gamepad1.a) {
+                if (gamepad1.y) {
                     resetAngle();
                 }
 
@@ -558,9 +565,13 @@ public class FinalTeleop extends LinearOpMode {
     private double getAngle() {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-                                
+        double deltaAngle;
+        if(lastAngles != null) {
+            deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+        }
+        else{
+            deltaAngle=angles.firstAngle;
+        }
         if (deltaAngle < -180)
             deltaAngle += 360;
         else if (deltaAngle > 180)
