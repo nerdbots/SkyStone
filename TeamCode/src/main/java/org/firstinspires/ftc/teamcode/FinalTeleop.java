@@ -61,15 +61,15 @@ public class FinalTeleop extends LinearOpMode {
     DcMotor tapeMotor;
 
     double  positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
-    double  positionAngle = 0.71;  //(MAX_POS - MIN_POS) / 2;
+    double  positionAngle = 0.76;  //(MAX_POS - MIN_POS) / 2; 0.71
     double  tapeSpeed = 0.0;
 
     Orientation angles;
     Acceleration gravity;
     
-    Orientation             lastAngles/* = new Orientation()*/;
+    Orientation             lastAngles = new Orientation();
     
-    double globalAngle;
+    double globalAngle = 0.0;
 
 
 
@@ -112,9 +112,9 @@ public class FinalTeleop extends LinearOpMode {
     private double RkI = 0.000; //0.000
     private double RkD = 0.000;//0.0009
     
-    private double ZkP = 0.011; //0.0321, 0.015; 0.0225+
+    private double ZkP = 0.009; //0.0321, 0.015; 0.0225; 0.011
     private double ZkI = 0.000; //0.000
-    private double ZkD = 0.0016;//0.00535, 1.4, 0.003
+    private double ZkD = 0.006;//0.00535, 1.4, 0.003, 0.0016
 
     
     private double REV = 0;
@@ -483,7 +483,8 @@ public class FinalTeleop extends LinearOpMode {
             }
             
             
-            
+
+
             
             //calculate error (Proportional)
             error = TPos - EV;
@@ -566,12 +567,8 @@ public class FinalTeleop extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double deltaAngle;
-        if(lastAngles != null) {
             deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        }
-        else{
-            deltaAngle=angles.firstAngle;
-        }
+
         if (deltaAngle < -180)
             deltaAngle += 360;
         else if (deltaAngle > 180)
