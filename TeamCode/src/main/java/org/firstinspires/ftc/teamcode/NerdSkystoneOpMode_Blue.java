@@ -28,6 +28,7 @@
  */
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.HashMap;
 
@@ -44,7 +45,7 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneOpMode_Blue", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class NerdSkystoneOpMode_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdArmMove Arm;

@@ -45,7 +45,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdParkOnlyOpMode", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class NerdParkOnlyOpMode extends LinearOpMode {
     private NerdBOT myNerdBOT ;
 
@@ -87,13 +87,13 @@ public class NerdParkOnlyOpMode extends LinearOpMode {
         //UNITS ARE IN INCHES
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run1");
-       // myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
+        myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
      // myNerdBOT.nerdPidDriveWithRampUpDown(-85,0,0);
        // myNerdBOT.nerdPidDriveWithRampUpDown(-96,-8,0);
       //  myNerdBOT.nerdPidDriveWithRampUpDown(85,0,0);
 
        // myNerdBOT.nerdPidTurn(90);
-        myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(0, -40, 0, false,false,4);
+       // myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(0, -40, 0, false,false,4);
 
     }
 }
