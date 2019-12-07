@@ -183,10 +183,10 @@ public class NerdFullAuton_Blue extends LinearOpMode {
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); // go at faster speed for long distances
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*24.0, 0.0, 0); // move to get away from the foundation
-        myNerdBOT.nerdPidDrive( X_DIRECTION*19.0, 21.0, 0); // strafe to miss [parked] opponent CHANGED THIS
+        myNerdBOT.nerdPidDrive( X_DIRECTION*19.0, 20.0, 0); // strafe to miss [parked] opponent CHANGED THIS
 
 
-        myNerdBOT.nerdPidDrive( X_DIRECTION*61 + X_DIRECTION*drop_2_offset, -1.0, 0); // go to other side of the field
+        myNerdBOT.nerdPidDrive( X_DIRECTION*61 + X_DIRECTION*drop_2_offset, -2.0, 0); // go to other side of the field
 
         Arm.ArmLoop(-170,7,0.8,0.5); // drop one arm
 
