@@ -121,7 +121,9 @@ public class NerdFullAuton_Blue extends LinearOpMode {
             //sleep(2000);
         }
         else if (Skystone_Position == 1) {
-            myNerdBOT.nerdPidDrive( X_DIRECTION*-5.0, 26.0, 0.0, false, false); //13.5
+            myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, 10.0, 0.0, false, false); //13.5
+
+            myNerdBOT.nerdPidDrive( X_DIRECTION*-5.0, 16.0, 0.0, false, false); //13.5
             offset_x_run3 = -5.0;
             drop_2_offset = -9.0; // -4
 
