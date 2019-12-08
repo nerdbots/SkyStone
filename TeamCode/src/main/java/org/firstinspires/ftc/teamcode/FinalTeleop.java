@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //@Disabled
 @TeleOp(name="Final_TeleOp", group="Final")
 public class FinalTeleop extends LinearOpMode {
-    private BNO055IMU imu=null;
+    private BNO055IMU imu;
     private DcMotor frontRightMotor;
     private DcMotor rearRightMotor;
     private DcMotor frontLeftMotor;
@@ -56,76 +56,74 @@ public class FinalTeleop extends LinearOpMode {
     private Blinker expansion_Hub_2;
     private DcMotor frontMotor;
     private DcMotor rearMotor;
-    Servo   servoPitch;
-    Servo   servoAngle;
+    Servo servoPitch;
+    Servo servoAngle;
     DcMotor tapeMotor;
 
-    double  positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
-    double  positionAngle = 0.71;  //(MAX_POS - MIN_POS) / 2;
-    double  tapeSpeed = 0.0;
+    double positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
+    double positionAngle = 0.76;  //(MAX_POS - MIN_POS) / 2;
+    double tapeSpeed = 0.0;
 
     Orientation angles;
     Acceleration gravity;
-    
-    Orientation             lastAngles/* = new Orientation()*/;
-    
-    double globalAngle;
+
+    Orientation lastAngles = new Orientation();
+
+    double globalAngle = 0.0;
 
 
+    static final double INCREMENT = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static /*final*/ int CYCLE_MS = 50; //50    // period of each cycle
+    static final double MAX_POS = 1.0;     // Maximum rotational position
+    static final double MIN_POS = 0.0;     // Minimum rotational position
 
-    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
-    static final int    CYCLE_MS    =   50;     // period of each cycle
-    static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
 
-    
     private ElapsedTime FPIDTime = new ElapsedTime();
-    
+
     private ElapsedTime RPIDTime = new ElapsedTime();
-    
+
     private ElapsedTime ZPIDTime = new ElapsedTime();
-    
+
     private ElapsedTime PIDTime = new ElapsedTime();
-    
+
     private double RPrevError = 0;
     private double FPrevError = 0;
     private double ZPrevError = 0;
-    
+
     private double RTotalError = 0;
     private double FTotalError = 0;
     private double ZTotalError = 0;
-    
+
     private double RSpeed = 0;
     private double FSpeed = 0;
     private double ZSpeed = 0;
-    
-        
+
+
     private double FDError = 0;
     private double RDerror = 0;
     private double ZDerror = 0;
-    
+
     private double FkP = 0.01; //0.012
     private double FkI = 0.000; //0.001
     private double FkD = 0.00;//0.001
-        
+
     private double RkP = 0.01; //0.0085
     private double RkI = 0.000; //0.000
     private double RkD = 0.000;//0.0009
-    
-    private double ZkP = 0.011; //0.0321, 0.015; 0.0225+
-    private double ZkI = 0.000; //0.000
-    private double ZkD = 0.0016;//0.00535, 1.4, 0.003
 
-    
+    private double ZkP = 0.0075; //0.0321, 0.015; 0.0225+
+    private double ZkI = 0.000; //0.000
+    private double ZkD = 0.00175;//0.00535, 1.4, 0.003
+
+
     private double REV = 0;
     private double FEV = 0;
     private double ZTar = 0;
-    
+
 
     private double MaxSpeedR = 0.5;
     private double MaxSpeedF = 0.5;
     private double MaxSpeedZ = 1.0;
-
 
 
     @Override
@@ -143,9 +141,7 @@ public class FinalTeleop extends LinearOpMode {
         tapeMotor = hardwareMap.get(DcMotor.class, "TapeMotor");
 
 
-      //  globalAngle = 0;/imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-
+        //  globalAngle = 0;/imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
 
 //        expansion_Hub_1 = hardwareMap.get(Blinker.class, "Expansion Hub 2");
@@ -188,34 +184,34 @@ public class FinalTeleop extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        
+
         double LMP = 0;
         double RMP = 0;
         double FMP = 0;
         double BMP = 0;
-        
+
         double FX = 0;
         double FY = 0;
-        
+
         double CA = 0;
-        
+
         double RSA = 0;
-        
+
         double Mag = 0;
         double zMag = 0;
-        
+
         double mult = 1; //THIS IS SPEED
-        double multZ = 0.8;//0.3
-        
+        double multZ = 0.6;//0.3
+
         double power = 1;
         double upMult = 1;
-        
+
         double joyX = 0;
         double joyY = 0;
-        
+
         //int targetR = -80; 
         //int targetF = 60;
-        
+
 
         if (!imu.isGyroCalibrated()) {
             telemetry.addData("Gyro", "Not Initialized");
@@ -226,74 +222,86 @@ public class FinalTeleop extends LinearOpMode {
         }
 
 
-        
         waitForStart();
 
-     //   resetAngle();
+        //   resetAngle();
 
         FPIDTime.reset();
         RPIDTime.reset();
         ZPIDTime.reset();
-        
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
 
+            if(gamepad2.start) {
+                rearMotor.setPower(0.5);
+                frontMotor.setPower(-0.5);
 
-            //if(  gamepad2.start) {
+                rearMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                frontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                sleep(500);
+
+                rearMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                frontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            }
 
 
-            if (  gamepad2.right_stick_y < -0.5) {
-                positionPitch += INCREMENT;
-                if (positionPitch >= MAX_POS) {
-                    positionPitch = MAX_POS;
+            if (gamepad1.left_bumper) {
+                if ((gamepad1.right_bumper)) {
+                    CYCLE_MS = 10;
+                } else {
+                    CYCLE_MS = 50;
                 }
-            }
-            if (  gamepad2.right_stick_y > 0.5) {
-                positionPitch -= INCREMENT;
-                if (positionPitch <= MIN_POS) {
-                    positionPitch = MIN_POS;
+                if (gamepad1.right_stick_y < -0.5) {
+                    positionPitch += INCREMENT;
+                    if (positionPitch >= MAX_POS) {
+                        positionPitch = MAX_POS;
+                    }
                 }
-            }
-            if (  gamepad2.right_stick_x > 0.5) {
-                positionAngle += INCREMENT;
-                if (positionAngle >= MAX_POS) {
-                    positionAngle = MAX_POS;
+                if (gamepad1.right_stick_y > 0.5) {
+                    positionPitch -= INCREMENT;
+                    if (positionPitch <= MIN_POS) {
+                        positionPitch = MIN_POS;
+                    }
                 }
-            }
-            if (  gamepad2.right_stick_x < -0.5) {
-                positionAngle -= INCREMENT;
-                if (positionAngle <= MIN_POS) {
-                    positionAngle = MIN_POS;
+                if (gamepad1.right_stick_x > 0.5) {
+                    positionAngle += INCREMENT;
+                    if (positionAngle >= MAX_POS) {
+                        positionAngle = MAX_POS;
+                    }
                 }
-            }
-            //if (  gamepad2.left_stick_x < -0.1) {
-            //    tapeSpeed =   gamepad2.left_stick_x;
-            //}
-            if (Math.abs(  gamepad2.left_stick_x) > 0.1) {
-                tapeSpeed =   gamepad2.left_stick_x;
+                if (gamepad1.right_stick_x < -0.5) {
+                    positionAngle -= INCREMENT;
+                    if (positionAngle <= MIN_POS) {
+                        positionAngle = MIN_POS;
+                    }
+                }
+                //if (  gamepad1.left_stick_x < -0.1) {
+                //    tapeSpeed =   gamepad1.left_stick_x;
+                //}
+                if (Math.abs(gamepad1.left_stick_x) > 0.1) {
+                    tapeSpeed = gamepad1.left_stick_x;
+                } else {
+                    tapeSpeed = 0;
+                }
+
+                tapeMotor.setPower(tapeSpeed);
+
+                // Display the current value
+                telemetry.addData("Servo Pitch", "%5.2f", positionPitch);
+                telemetry.addData("Servo Angle", "%5.2f", positionAngle);
+                telemetry.addData(">", "Press Stop to end test.");
+
+                // Set the servo to the new position and pause;
+                servoPitch.setPosition(positionPitch);
+                servoAngle.setPosition(positionAngle);
+
+                sleep(CYCLE_MS);
+                idle();
             } else {
-                tapeSpeed = 0;
-            }
-
-            tapeMotor.setPower(tapeSpeed);
-
-            // Display the current value
-            telemetry.addData("Servo Pitch", "%5.2f", positionPitch);
-            telemetry.addData("Servo Angle", "%5.2f", positionAngle);
-            telemetry.addData(">", "Press Stop to end test.");
-            telemetry.update();
-
-            // Set the servo to the new position and pause;
-            servoPitch.setPosition(positionPitch);
-            servoAngle.setPosition(positionAngle);
-
-            sleep(CYCLE_MS);
-            idle();
-        //} else {
-
-
 
 
                 if (gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0) {
@@ -350,7 +358,7 @@ public class FinalTeleop extends LinearOpMode {
                     multZ = 0.3;
                     mult = 0.3;
                 } else {
-                    multZ = 0.8;
+                    multZ = 0.6;
                     mult = 1;
                 }
 
@@ -402,7 +410,7 @@ public class FinalTeleop extends LinearOpMode {
                     MaxSpeedR = 0.5; // 0.6
                     MaxSpeedF = 0.5; // 0.2
                 } else if (gamepad2.left_bumper) { //foundation
-                    REV = -210;
+                    REV = -500;
                     FEV = -10;
                     MaxSpeedR = 1; //0.8
                     MaxSpeedF = 0.5; // 0.5
@@ -448,11 +456,11 @@ public class FinalTeleop extends LinearOpMode {
             }
 
         }
+    }
 
-    
-                                                     //0 is rearMotor 1 is frontMotor \/
-        public void PIDArm(double EV, double TPos, double kP, double kI, double kD, int motor) {
-            
+        //0 is rearMotor 1 is frontMotor \/
+        public void PIDArm ( double EV, double TPos, double kP, double kI, double kD, int motor){
+
             double DError = 0;
             int DBanMin = -1;
             int DBanMax = 1;
@@ -463,13 +471,13 @@ public class FinalTeleop extends LinearOpMode {
             double PrevError = 0;
             double MaxSpeed = 0;
 
-            
-            if(motor == 0) {
+
+            if (motor == 0) {
                 TotalError = RTotalError;
                 PrevError = RPrevError;
                 PIDTime = RPIDTime;
                 MaxSpeed = MaxSpeedR;
-            } else if(motor == 1){
+            } else if (motor == 1) {
                 TotalError = FTotalError;
                 PrevError = FPrevError;
                 PIDTime = FPIDTime;
@@ -481,106 +489,98 @@ public class FinalTeleop extends LinearOpMode {
                 MaxSpeed = MaxSpeedZ;
 
             }
-            
-            
-            
-            
+
+
             //calculate error (Proportional)
             error = TPos - EV;
-            
+
             //Calculate Total error (Integral)
             TotalError = (error * PIDTime.seconds()) + TotalError;
-            
+
             //do deadband
-            if(DBanMax > error && error > DBanMin) {
-              error = 0;
-              //TotalError = 0;
+            if (DBanMax > error && error > DBanMin) {
+                error = 0;
+                //TotalError = 0;
             }
-            
+
             //calculate delta error (Derivative)
-            DError = (error - PrevError) / PIDTime.seconds();
-            
+            DError = -(EV/*error*/ - PrevError) / PIDTime.seconds();
+
             //reset elapsed timer
             PIDTime.reset();
-            
-            //Max total error
-            if(Math.abs(TotalError) > MaxError) {
-                
 
-            if(TotalError > 0) {
+            //Max total error
+            if (Math.abs(TotalError) > MaxError) {
+
+
+                if (TotalError > 0) {
                     TotalError = MaxError;
                 } else {
                     TotalError = -MaxError;
                 }
-                
+
             }
-            
-            
+
 
             //Calculate final speed
             speed = (error * kP) + (TotalError * kI) + (DError * kD);
-            
-            
+
+
             //Make sure speed is no larger than MaxSpeed
-            if(Math.abs(speed) > MaxSpeed) {
-                 if(speed > 0) {
+            if (Math.abs(speed) > MaxSpeed) {
+                if (speed > 0) {
                     speed = MaxSpeed;
                 } else {
                     speed = -MaxSpeed;
                 }
             }
-            PrevError = error;
-            
-            if(motor == 0) {
-             RSpeed = speed;
-             RPrevError = PrevError;
-             RTotalError = TotalError;
-            } else if(motor == 1) {
-            FSpeed = speed;
-            FPrevError = PrevError;
-            FTotalError = TotalError;
+            PrevError = EV/*error*/;
+
+            if (motor == 0) {
+                RSpeed = speed;
+                RPrevError = PrevError;
+                RTotalError = TotalError;
+            } else if (motor == 1) {
+                FSpeed = speed;
+                FPrevError = PrevError;
+                FTotalError = TotalError;
             } else {
-            ZSpeed = speed;
-            ZPrevError = PrevError;
-            ZTotalError = TotalError;
+                ZSpeed = speed;
+                ZPrevError = PrevError;
+                ZTotalError = TotalError;
             }
             //set previous error to error
-            
-            
+
+
             //add telemetry
-            
 
-            
-    
+
         }
-    
-    private void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        globalAngle = 0;
-    }
-    
+        private void resetAngle () {
+            lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-    //Function to get the angle of the Gyro sensor
-    private double getAngle() {
+            globalAngle = 0;
+        }
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle;
-        if(lastAngles != null) {
+
+        //Function to get the angle of the Gyro sensor
+        private double getAngle () {
+
+            Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            double deltaAngle;
             deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+            if (deltaAngle < -180)
+                deltaAngle += 360;
+            else if (deltaAngle > 180)
+                deltaAngle -= 360;
+
+            globalAngle += deltaAngle;
+
+            lastAngles = angles;
+
+            return globalAngle;
         }
-        else{
-            deltaAngle=angles.firstAngle;
-        }
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastAngles = angles;
-
-        return globalAngle;
     }
-}
+

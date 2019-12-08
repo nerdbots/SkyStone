@@ -208,20 +208,20 @@ NerdFullAuton_Red extends LinearOpMode {
         Arm.ArmLoop(-10,7, 0.6, 0.2);  // return front arm up
 
 
-        myNerdBOT.setMinMaxSpeeds(0.0,0.7); //
+        myNerdBOT.setMinMaxSpeeds(0.0,0.85); //
         myNerdBOT.nerdPidDrive( X_DIRECTION*-75 - X_DIRECTION*drop_2_offset, -6.5, 0); //CHANGED THIS
         //myNerdBOT.setMinMaxSpeeds(0.0,0.7);
 
         myNerdBOT.nerdPidTurn( X_DIRECTION*90);
 
-        myNerdBOT.nerdPidDrive( X_DIRECTION*-4, 21, X_DIRECTION*90, true, false); // 19 CHANGED THIS
+        myNerdBOT.nerdPidDrive( X_DIRECTION*-4, 22, X_DIRECTION*90, false, false); // 19 CHANGED THIS; 21
 
         Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
         Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
         Arm.ArmLoop(-160,7, 0.5, 0.5);  // squeeze foundation and return front arm up
         Arm.ArmLoop(-10,7, 0.5, 0.5);  // squeeze foundation and return front arm up
 
-        myNerdBOT.nerdPidDrive( X_DIRECTION*5, -27, X_DIRECTION*90); //park //CHANGED THIS
+        myNerdBOT.nerdPidDrive( X_DIRECTION*5, -27, X_DIRECTION*90); //park //CHANGED THIS; -27
 
 
         if (debugFlag)
