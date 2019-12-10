@@ -47,20 +47,20 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneOpMode_Red", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class NerdSkystoneOpMode_Red extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdArmMove Arm;
     private double[] SkystoneLocationArray = new double[3];
     boolean debugFlag = false;
-    private double foundation_distance=88.0;
+    private double foundation_distance=90.0;
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = -1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
     private OpenCVSkyStone VFC;
     double Skystone_Position=2;
-    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=18.5;
-    private final double ARM_OFFSET=2.0;
+    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=16.0;
+    private final double ARM_OFFSET=0.0;
     @Override
     public void runOpMode() {
 
