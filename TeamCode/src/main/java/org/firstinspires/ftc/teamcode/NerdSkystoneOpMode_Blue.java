@@ -45,20 +45,20 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneOpMode_Blue", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class NerdSkystoneOpMode_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdArmMove Arm;
     private double[] SkystoneLocationArray = new double[3];
     boolean debugFlag = false;
-    private double foundation_distance=88.0;
+    private double foundation_distance=84.0;
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
     private OpenCVSkyStone VFC;
     double Skystone_Position=2;
-    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=21.0;
-    private final double ARM_OFFSET=2.5;
+    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=20.0;
+    private final double ARM_OFFSET=2;
 
     @Override
     public void runOpMode() {
@@ -116,7 +116,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             if(dropNumber == 1) {
                 //Only first run we will use X and Y from vuforia output. We add
                 // the offsets based on positions to the total pickup distance for the next stone
-                myNerdBOT.nerdPidDrive(currentSkyStone.getX_offset(), 26, 0.0, false, false);
+                myNerdBOT.nerdPidDrive(currentSkyStone.getX_offset()+3.0, 26, 0.0, false, false);
 
             }
             else if (dropNumber == MAX_BLOCK_DROPS){
