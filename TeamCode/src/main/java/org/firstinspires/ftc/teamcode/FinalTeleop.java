@@ -400,7 +400,7 @@ public class FinalTeleop extends LinearOpMode {
                     MaxSpeedR = 0.1; //0.5
                     MaxSpeedF = 1; //0.5
                 } else if (gamepad2.x) { //home pickup
-                    REV = 210;//NEGATIVE TO POSITIVE
+                    REV = 210;
                     FEV = -10;
                     MaxSpeedR = 1; // 0.6
                     MaxSpeedF = 0.2; // 0.2
