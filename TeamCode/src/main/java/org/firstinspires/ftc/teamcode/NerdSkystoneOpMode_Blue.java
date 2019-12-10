@@ -45,21 +45,20 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name="NerdSkystoneOpMode_Blue", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class NerdSkystoneOpMode_Blue extends LinearOpMode {
     private NerdBOT myNerdBOT;
     private NerdArmMove Arm;
     private double[] SkystoneLocationArray = new double[3];
     boolean debugFlag = false;
-    private double foundation_distance=88.0;
     private double foundation_distance=90.0; //84.0
     private HashMap<Integer, NerdSkystone> skyStonesMap = new HashMap<Integer, NerdSkystone>();
     private final int X_DIRECTION = 1; // 1 For Red Alliance, -1 for Blue
     private final int MAX_BLOCK_DROPS=3 ; // How many blocks will be delivered to the foundation.
     private OpenCVSkyStone VFC;
     double Skystone_Position=2;
-    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=21.0;
-    private final double ARM_OFFSET=2.5;
+    private final double FOUNDATION_OFFSET_FOR_LAST_DROP=16.0; //20
+    private final double ARM_OFFSET=2;
 
     @Override
     public void runOpMode() {
@@ -136,7 +135,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             //We reduce the distance to foundation every run.
             // We drop the first skystone at farthest distance, and then work our way backwards to prevent slipping.
             if (dropNumber > 1) {
-                foundation_distance = foundation_distance - 8;
+                foundation_distance = foundation_distance - 9; //8
             }
             dropDistance = foundation_distance + X_DIRECTION*currentSkyStone.getX_offset();
 
@@ -148,7 +147,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             setPIDGainsForRampUpDown();
             myNerdBOT.setMinMaxSpeeds(0.0,1);
 
-            double ydistance = -9.5;
+            double ydistance = -4.0; //9.5
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance-1;
 
             myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
@@ -180,7 +179,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
                 //For moving arm and robot together
 
                 myNerdBOT.nerdArm.resetArm();
-                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION * (pickupDistance), -8.5, 0, false, false, 4); // go to other side of the field
+                myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION * (pickupDistance), -14.0, 0, false, false, 4); // go to other side of the field
 
                 setPIDGainsForShortDistances();
 
