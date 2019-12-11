@@ -106,7 +106,7 @@ NerdFullAuton_Red extends LinearOpMode {
 
 
 
-        Arm.ArmLoop(-170,7, 0.8, 0.5); // -160, 0.5
+        Arm.ArmLoop(-210,7, 0.8, 0.5); // -160, 0.5
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.4);
 
@@ -143,9 +143,9 @@ NerdFullAuton_Red extends LinearOpMode {
 
 
 
-        Arm.ArmLoop(-170,140, 0.5, 0.8); // grab 1
+        Arm.ArmLoop(-210,160, 0.5, 1.0); // grab 1
         //sleep(500);
-        Arm.ArmLoop(-10,7, 0.6, 0.2); // home
+        Arm.ArmLoop(210,-10, 1.0, 0.2); // home
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run3");
 
@@ -167,9 +167,9 @@ NerdFullAuton_Red extends LinearOpMode {
         myNerdBOT.setMinMaxSpeeds(0.0,0.4);
 
 
-        Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-160,7, 0.5, 0.5);  // home front arm
+   //     Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
+        Arm.ArmLoop(-210,160, 0.5, 1.0);// put down the block
+        Arm.ArmLoop(-210,-10, 0.5, 0.5);  // home front arm
 
 
 
@@ -181,7 +181,7 @@ NerdFullAuton_Red extends LinearOpMode {
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, -34.0, 0); // pull foundation
 
-        Arm.ArmLoop(-10,7, 0.5, 0.5); // home arms
+        Arm.ArmLoop(-10,-10, 0.5, 0.5); // home arms
 
 
 
@@ -193,7 +193,7 @@ NerdFullAuton_Red extends LinearOpMode {
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*(61 + drop_2_offset), 0.0, 0); // go to other side of the field
 
-        Arm.ArmLoop(-170,7,0.8,0.5); // drop one arm
+        Arm.ArmLoop(-210,-10,0.8,0.5); // drop one arm
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3); // go slower for more precise tasks
 
@@ -204,8 +204,8 @@ NerdFullAuton_Red extends LinearOpMode {
 //        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
 //        Arm.ArmLoop(-10,7, 0.8, 0.2);  // squeeze foundation and return front arm up
 
-        Arm.ArmLoop(-170,140, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-10,7, 0.6, 0.2);  // return front arm up
+        Arm.ArmLoop(-210, -10, 0.5, 1.0);// drop second arm
+        Arm.ArmLoop(210,-10, 1.0, 0.2);  // return both arms up
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); //
@@ -216,10 +216,10 @@ NerdFullAuton_Red extends LinearOpMode {
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*-4, 22, X_DIRECTION*90, false, false); // 19 CHANGED THIS; 21
 
-        Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-        Arm.ArmLoop(-160,7, 0.5, 0.5);  // squeeze foundation and return front arm up
-        Arm.ArmLoop(-10,7, 0.5, 0.5);  // squeeze foundation and return front arm up
+        //   Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
+        Arm.ArmLoop(-210,160, 0.5, 1.0);// put down the block
+        Arm.ArmLoop(-160,-10, 0.5, 0.5);  // return rear arm up
+        Arm.ArmLoop(10,-10, 0.5, 0.5);  // return both arm up
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*5, -27, X_DIRECTION*90); //park //CHANGED THIS; -27
 

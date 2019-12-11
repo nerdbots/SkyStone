@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -134,6 +135,12 @@ public class NerdBOT{
 
     public NerdArmMove nerdArm;
 
+    //Servos
+
+    private Servo servoPitch ;
+    private Servo servoAngle ;
+    private DcMotor tapeMotor ;
+
     /**Constructor to create NerdBOT object
      *
      * Creates a new NerdBOT object and assigns the hardwareMap provided by caller
@@ -157,7 +164,7 @@ public class NerdBOT{
      *
      */
 
-    public void nerdPidDrive(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop) {
+    public void nerdPidDrive(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, double timeOut) {
 
         final String funcName = "nerdPidDrive";
 
@@ -228,7 +235,7 @@ public class NerdBOT{
 //
  //           while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks) && (!this.touchLeft.isPressed() || !this.touchRight.isPressed())))) {
             //while (!this.opmode.isStopRequested() && (((!distanceTargetReached(xTicks, yTicks) && settlingtime.seconds() <= 0.2) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))))) {
-                while (this.opmode.opModeIsActive() && (((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))))) {
+                while (this.opmode.opModeIsActive() && (((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))) && runtime.seconds()<= timeOut) {
 
                 if (debugFlag)
                     RobotLog.d("NerdBOT - opModeIsActive  Inside While Loop = %b, distanceTargetReached = %b", this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks));
@@ -280,7 +287,11 @@ public class NerdBOT{
 
     }
 
-    public void nerdPidTurn(double targetAngle) {
+    public void nerdPidDrive(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop){
+        nerdPidDrive(xDistance,yDistance,zAngleToMaintain,touchEnabledStop,armColorSensorEnabledStop,30);
+    }
+
+    public void nerdPidTurn(double targetAngle, double turretTurnAngle) {
 
         final String funcName = "nerdPidTurn";
         //made change here
@@ -295,6 +306,7 @@ public class NerdBOT{
         turnPIDCalculator.setTarget(targetAngle, getZAngleValue());
 
         motorsSetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        servoAngle.setPosition(turretTurnAngle);
 
         while (!this.opmode.isStopRequested() &&  runtime.seconds() <= 1.0) {
 
@@ -337,6 +349,11 @@ public class NerdBOT{
             brakeMotorsAndStop();
     }
 
+    public void nerdPidTurn(double targetAngle) {
+
+        nerdPidTurn(targetAngle, 0);
+
+    }
 
     public int inchesToTicksForQuadStraightDrive(double wheelDiameter, double straightDistance, double wheelMountAngle){
         int ticks;
@@ -449,6 +466,10 @@ public class NerdBOT{
         this.touchLeft = this.hardwareMap.touchSensor.get("touchL");
         this.touchRight = this.hardwareMap.touchSensor.get("touchR");
         this.touchBack = this.hardwareMap.touchSensor.get("touchB");
+
+        this.servoPitch = this.hardwareMap.get(Servo.class, "TurretPitch");
+        this.servoAngle = this.hardwareMap.get(Servo.class, "TurretAngle");
+        this.tapeMotor = this.hardwareMap.get(DcMotor.class, "TapeMotor");
 
         resetAngle();
 
@@ -696,13 +717,19 @@ public class NerdBOT{
 
     public void nerdPidDrive(double xDistance,double yDistance, double zAngleToMaintain) {
 
-        nerdPidDrive(xDistance,yDistance,zAngleToMaintain,false, false);
+        nerdPidDrive(xDistance,yDistance,zAngleToMaintain,false, false, 30);
+
+    }
+
+    public void nerdPidDrive(double xDistance,double yDistance, double zAngleToMaintain, double timeOut) {
+
+        nerdPidDrive(xDistance,yDistance,zAngleToMaintain,false, false, timeOut);
 
     }
 
     public void nerdPidDriveWithRampUpDown(double xDistance,double yDistance, double zAngleToMaintain) {
 
-        nerdPidDriveWithRampUpDown(xDistance,yDistance,zAngleToMaintain,false, false);
+        nerdPidDriveWithRampUpDown(xDistance,yDistance,zAngleToMaintain,false, false, 30);
 
     }
 
@@ -804,7 +831,7 @@ public class NerdBOT{
     }
 
 
-    public void nerdPidDriveWithRampUpDown(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop) {
+    public void nerdPidDriveWithRampUpDown(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, double timeOut) {
 
         final String funcName = "nerdPidDrive";
 
@@ -876,7 +903,7 @@ public class NerdBOT{
 
         //Perform PID Loop until we reach the targets
 
-        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))) {
+        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))) && runtime.seconds()<=timeOut) {
 
             if (debugFlag)
                 RobotLog.d("STOP, opmode %b, distanceTargetReached %b, settling time %f, stopRequested %b",this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks),settlingtime.seconds(),stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled));
@@ -938,7 +965,13 @@ public class NerdBOT{
 
     }
 
-    public void setXPIDGains(double kP, double kI, double kD){
+    public void nerdPidDriveWithRampUpDown(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop) {
+
+        nerdPidDriveWithRampUpDown(xDistance,yDistance,zAngleToMaintain,touchEnabledStop,armColorSensorEnabledStop,30);
+    }
+
+
+        public void setXPIDGains(double kP, double kI, double kD){
         this.xPIDCalculator.setPIDGains(kP, kI, kD);
     }
     public void setYPIDGains(double kP, double kI, double kD){
@@ -949,7 +982,7 @@ public class NerdBOT{
     }
 
 
-    public void nerdPidDriveWithRampUpDownWithArmAction(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, int armAction) {
+    public void nerdPidDriveWithRampUpDownWithArmAction(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, int armAction, double timeOut) {
 
         final String funcName = "nerdPidDrive";
 
@@ -1028,7 +1061,7 @@ public class NerdBOT{
 
         //Perform PID Loop until we reach the targets
 
-        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))) {
+        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))) && runtime.seconds()<=timeOut) {
 
             if (debugFlag)
                 RobotLog.d("STOP, opmode %b, distanceTargetReached %b, settling time %f, stopRequested %b",this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks),settlingtime.seconds(),stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled));
@@ -1036,12 +1069,12 @@ public class NerdBOT{
 
             //armAction 4 = Pickup
 
-            if(armAction == 4 && nerdArm.Timeout.seconds() < 1.0){
+            if(armAction == 4 && nerdArm.Timeout.seconds() < 0.5){
 
-                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 0,0.012, 0.0, 0.0009, 0, 0.5);
+                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 10,0.01, 0.0, 0.0, 0, 0.5);
                 nerdArm.rearMotor.setPower(nerdArm.RSpeed);
 
-                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(), -10,0.0085, 0.001, 0.001, 1,0.5);
+                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(), -10,0.01, 0.0, 0.0, 1,1);
                 nerdArm.frontMotor.setPower(nerdArm.FSpeed);
 
             }
@@ -1104,9 +1137,157 @@ public class NerdBOT{
 
     }
 
+    public void nerdPidDriveWithRampUpDownWithArmAction(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, int armAction){
+
+        nerdPidDriveWithRampUpDownWithArmAction(xDistance,yDistance,zAngleToMaintain,touchEnabledStop,armColorSensorEnabledStop,armAction,30);
+    }
 
 
 
+
+    /** Function to drive robot based on PIDs in X, Y and Z directions.
+     *     *
+     * @param   xDistance           - Distance to move in X direction.
+     * @param   yDistance           - Distance to move in Y direction.
+     * @param   zAngleToMaintain    - Angle to maintain.
+     *
+     */
+
+    public void nerdPidDriveWithArmAction(double xDistance,double yDistance, double zAngleToMaintain, boolean touchEnabledStop, boolean armColorSensorEnabledStop, double timeOut, int armAction) {
+
+        final String funcName = "nerdPidDrive";
+
+
+        //Speeds for assigning to 4 motors.
+
+        double leftSpeed;
+        double rightSpeed;
+        double rightSpeedB;
+        double leftSpeedB;
+
+        //To hold the motor encoder ticks in each direction.
+
+        int xTicks,yTicks;
+
+        //Hold the PID values for X,Y and Z.
+        double zpid, xpid, ypid;
+
+        //Holds final motor powers to be sent to motors.
+
+        double [] motorPowers;
+
+        boolean touchEnabled = false;
+        boolean colorEnabled = false;
+
+
+        //Reset the timer
+        runtime.reset();
+
+        //Reset the Calculators
+
+        xPIDCalculator.reset();
+        yPIDCalculator.reset();
+        zPIDCalculator.reset();
+
+        //Reset the motors so that the encoders are set to 0.
+
+        motorsResetAndRunUsingEncoders();
+
+        //Convert X and Y distances to corresponding encoder ticks.
+
+        xTicks = xDistance != 0.0 ? (int)inchesToTicksForQuadStraightDrive(wheelDiameter,xDistance, 45.0): 0;
+        yTicks = yDistance != 0.0 ? (int)inchesToTicksForQuadStraightDrive(wheelDiameter, yDistance, 45.0): 0;
+
+        if (debugFlag)
+            RobotLog.d ("NerdBOT - xTicks = %d, yTicks = %d , Angle %f", xTicks, yTicks, zAngleToMaintain);
+
+        //Set PID targets for X, Y and Z
+
+        xPIDCalculator.setTarget(xTicks,findXDisplacement());
+        yPIDCalculator.setTarget(yTicks,findYDisplacement());
+        zPIDCalculator.setTarget(zAngleToMaintain,getZAngleValue());
+
+
+        if (debugFlag)
+            RobotLog.d ("NerdBOT - opModeIsActive NOTCHECKED = %b, distanceTargetReached = %b",  this.opmode.opModeIsActive(), distanceTargetReached(xTicks,yTicks));
+        if(touchEnabledStop){
+            touchEnabled = true;
+        }else if(armColorSensorEnabledStop){
+            colorEnabled=true;
+
+        }else if(touchEnabled && colorEnabled){
+            touchEnabled=false;
+            colorEnabled=true;
+        }
+
+        nerdArm.resetArm();
+        //Perform PID Loop until we reach the targets
+//
+        //           while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks) && (!this.touchLeft.isPressed() || !this.touchRight.isPressed())))) {
+        //while (!this.opmode.isStopRequested() && (((!distanceTargetReached(xTicks, yTicks) && settlingtime.seconds() <= 0.2) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))))) {
+        while (this.opmode.opModeIsActive() && (((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))) && runtime.seconds()<= timeOut) {
+
+            if (debugFlag)
+                RobotLog.d("NerdBOT - opModeIsActive  Inside While Loop = %b, distanceTargetReached = %b", this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks));
+
+            //armAction 4 = Pickup
+
+            if(armAction == 4 && nerdArm.Timeout.seconds() < 0.5){
+
+                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 0,0.012, 0.0, 0.0009, 0, 0.5);
+                nerdArm.rearMotor.setPower(nerdArm.RSpeed);
+
+                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(), -10,0.0085, 0.001, 0.001, 1,0.5);
+                nerdArm.frontMotor.setPower(nerdArm.FSpeed);
+
+            }
+
+            //Feed the input device readings to corresponding PID calculators:
+
+            zpid = zPIDCalculator.getOutput(getZAngleValue(), GYRO);
+            xpid = xPIDCalculator.getOutput(findXDisplacement(), ENCODERS);
+            ypid = yPIDCalculator.getOutput(findYDisplacement(), ENCODERS);
+
+            if (debugFlag)
+                RobotLog.d("NerdBOT XPID - %f, YPID - %f , ZPID - %f", xpid, ypid, zpid);
+
+            //Calculate Speeds based on Inverse Kinematics
+
+            leftSpeed = ypid - zpid + xpid;
+            rightSpeed = ypid + zpid - xpid;
+            leftSpeedB = ypid - zpid - xpid;
+            rightSpeedB = ypid + zpid + xpid;
+
+            if (debugFlag) {
+                RobotLog.d("NerdBOT  - Speeds before Normalizing : %s |leftSpeed | rightSpeed | leftSpeedB | rightSpeedB ", funcName);
+                RobotLog.d("NerdBOT  - Speeds before Normalizing : %s |%f|%f|%f|%f ", funcName, leftSpeed, rightSpeed, leftSpeedB, rightSpeedB);
+            }
+
+            //Normalize the Motor Speeds for Min and Max Values
+
+            motorPowers = normalizeSpeedsForMinMaxValues(leftSpeed, rightSpeed, rightSpeedB, leftSpeedB);
+
+            // Set Powers to corresponding Motors
+
+            leftMotor.setPower(motorPowers[0]);
+            rightMotor.setPower(motorPowers[1]);
+            rightMotorB.setPower(motorPowers[2]);
+            leftMotorB.setPower(motorPowers[3]);
+
+
+            if (debugFlag) {
+                RobotLog.d("NerdBOT  - Speeds after Normalizing : %s |leftSpeed | rightSpeed | leftSpeedB | rightSpeedB ", funcName);
+                RobotLog.d("NerdBOT  - Speeds after Normalizing : %s |%f|%f|%f|%f ", funcName, motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
+            }
+
+        }
+        //Brake once the PID loop is complete
+
+        RobotLog.d("NerdBOT  - Displacement Before Stop : %s|xTarget | yTarget | xDisplacement | yDisplacement ", funcName);
+        RobotLog.d("NerdBOT  - Displacement Before Stop : %s|%d|%d|%f|%f ", funcName, xTicks, yTicks, findXDisplacement(), findYDisplacement());
+        brakeMotorsAndStop();
+
+    }
 
 
 

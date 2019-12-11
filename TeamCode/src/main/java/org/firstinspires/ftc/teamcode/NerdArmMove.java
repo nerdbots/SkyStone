@@ -50,13 +50,21 @@ public class NerdArmMove {
     private double FTotalError = 0;
     public double RSpeed = 0;
     public double FSpeed = 0;
-    private double FkP = 0.012; //0.012
-    private double FkI = 0.001; //0.006
-    private double FkD = 0.001;//0.0012
-        
-    private double RkP = 0.0085; //0.009
-    private double RkI = 0.000; //0.006
-    private double RkD = 0.0009;//0.0008
+//    private double FkP = 0.012; //0.012
+//    private double FkI = 0.001; //0.006
+//    private double FkD = 0.001;//0.0012
+//
+//    private double RkP = 0.0085; //0.009
+//    private double RkI = 0.000; //0.006
+//    private double RkD = 0.0009;//0.0008
+
+    private double FkP = 0.01; //0.012
+    private double FkI = 0.000; //0.001
+    private double FkD = 0.00;//0.001
+
+    private double RkP = 0.01; //0.0085
+    private double RkI = 0.000; //0.000
+    private double RkD = 0.000;//0.0009
     
     private double MaxSpeedR = 0.8;
     private double MaxSpeedF = 0.5;
@@ -86,6 +94,7 @@ public class NerdArmMove {
                 
                 rearMotor.setPower(RSpeed);
                 frontMotor.setPower(FSpeed);
+
                 
             }
         }
