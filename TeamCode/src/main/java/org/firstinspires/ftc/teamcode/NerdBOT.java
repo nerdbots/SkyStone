@@ -131,6 +131,8 @@ public class NerdBOT{
     boolean  settlingtimeInitiated = false;
     private double RAMPDOWN_MIN_SPEED=0.4;
 
+    private static double TURRET_HOME = 0.55;
+
     //For ARM
 
     public NerdArmMove nerdArm;
@@ -306,7 +308,7 @@ public class NerdBOT{
         turnPIDCalculator.setTarget(targetAngle, getZAngleValue());
 
         motorsSetMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        servoAngle.setPosition(turretTurnAngle);
+        //servoAngle.setPosition(turretTurnAngle);
 
         while (!this.opmode.isStopRequested() &&  runtime.seconds() <= 1.0) {
 
@@ -351,7 +353,7 @@ public class NerdBOT{
 
     public void nerdPidTurn(double targetAngle) {
 
-        nerdPidTurn(targetAngle, 0);
+        nerdPidTurn(targetAngle, TURRET_HOME);
 
     }
 

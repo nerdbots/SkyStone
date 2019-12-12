@@ -103,7 +103,7 @@ public class NerdArmMove {
             rearMotor.setPower(-0.5);
         }
 
-
+        public  void KillTheForce() {rearMotor.setPower(0); frontMotor.setPower(0);}
 
                                                      //0 is rearMotor 1 is frontMotor \/
         public void PIDArm(double EV, double TPos, double kP, double kI, double kD, int motor, double MaxSpeed) {

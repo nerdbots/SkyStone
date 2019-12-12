@@ -179,14 +179,16 @@ NerdFullAuton_Red extends LinearOpMode {
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*0.0, -34.0, 0); // pull foundation
 
-        Arm.ArmLoop(-10,-10, 0.5, 0.5); // home arms
+        Arm.KillTheForce();
+
+        Arm.ArmLoop(10,-10, 0.8, 0.5); // home arms
 
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.7); // go at faster speed for long distances
 
-        myNerdBOT.nerdPidDrive( X_DIRECTION*22.0, 0.0, 0); // move to get away from the foundation
-        myNerdBOT.nerdPidDrive( X_DIRECTION*21.0, 17.0, 0); // strafe to miss [parked] opponent CHANGED THIS
+        myNerdBOT.nerdPidDrive( X_DIRECTION*22.0, 0.5, 0); // move to get away from the foundation
+        myNerdBOT.nerdPidDrive( X_DIRECTION*21.0, 16.5, 0); // strafe to miss [parked] opponent CHANGED THIS
 
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*(61 + drop_2_offset), 0.0, 0); // go to other side of the field
@@ -202,7 +204,7 @@ NerdFullAuton_Red extends LinearOpMode {
 //        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
 //        Arm.ArmLoop(-10,7, 0.8, 0.2);  // squeeze foundation and return front arm up
 
-        Arm.ArmLoop(-210, -10, 0.5, 1.0);// drop second arm
+        Arm.ArmLoop(-210,160, 0.5, 1.0);// drop second arm
         Arm.ArmLoop(210,-10, 1.0, 0.2);  // return both arms up
 
 
