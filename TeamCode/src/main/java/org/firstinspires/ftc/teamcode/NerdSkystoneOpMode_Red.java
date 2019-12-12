@@ -206,7 +206,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
                // setPIDGainsForRampUpDown();
                // myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
                 myNerdBOT.setMinMaxSpeeds(0.0,1.0);
-                myNerdBOT.nerdPidDriveWithArmAction(X_DIRECTION*4.0,-(FOUNDATION_OFFSET_FOR_LAST_DROP+9),X_DIRECTION*90,false,false,30,4);
+                myNerdBOT.nerdPidDriveWithArmAction(X_DIRECTION*4.0,-(FOUNDATION_OFFSET_FOR_LAST_DROP+4.0),X_DIRECTION*90,false,false,30,4);
                 // myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
 
              setPIDGainsForShortDistances();

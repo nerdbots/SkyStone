@@ -451,6 +451,12 @@ public class FinalTeleop extends LinearOpMode {
                 telemetry.addData("zMag", zMag);
                 telemetry.addData("ZTar", ZTar);
 
+                telemetry.addData("FREV", frontRightMotor.getCurrentPosition());
+                telemetry.addData("FLEV", frontLeftMotor.getCurrentPosition());
+                telemetry.addData("RREV", rearRightMotor.getCurrentPosition());
+                telemetry.addData("RLEV", rearLeftMotor.getCurrentPosition());
+
+
                 telemetry.addData("Status", "Running");
                 telemetry.update();
             }

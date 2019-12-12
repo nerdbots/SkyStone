@@ -94,9 +94,9 @@ public class NerdArmMove {
                 
                 rearMotor.setPower(RSpeed);
                 frontMotor.setPower(FSpeed);
-
-                
             }
+            rearMotor.setPower(0);
+            frontMotor.setPower(0);
         }
 
         public void UseTheForce() {
