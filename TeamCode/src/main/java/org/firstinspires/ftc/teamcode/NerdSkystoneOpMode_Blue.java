@@ -148,6 +148,7 @@ public class NerdSkystoneOpMode_Blue extends LinearOpMode {
             myNerdBOT.setMinMaxSpeeds(0.0,1);
 
             double ydistance = -4.0; //9.5
+
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance+1;
 
             myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks

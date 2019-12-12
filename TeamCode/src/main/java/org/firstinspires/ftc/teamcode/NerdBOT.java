@@ -235,7 +235,7 @@ public class NerdBOT{
 //
  //           while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks) && (!this.touchLeft.isPressed() || !this.touchRight.isPressed())))) {
             //while (!this.opmode.isStopRequested() && (((!distanceTargetReached(xTicks, yTicks) && settlingtime.seconds() <= 0.2) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))))) {
-                while (this.opmode.opModeIsActive() && (((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))) && runtime.seconds()<= timeOut) {
+                while (this.opmode.opModeIsActive() && (((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))))&& runtime.seconds()<= timeOut) {
 
                 if (debugFlag)
                     RobotLog.d("NerdBOT - opModeIsActive  Inside While Loop = %b, distanceTargetReached = %b", this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks));
@@ -758,6 +758,8 @@ public class NerdBOT{
         }*/
 
         return  rampDownMaxSpeed;
+        //return  currentMaxSpeed;
+
     }
 
     public double[] normalizeSpeedsForMinMaxValuesRampUpDown(double leftSpeed, double rightSpeed, double rightSpeedB, double leftSpeedB, int ticksUsedForRampUpDown, int currentTicks){
@@ -903,7 +905,7 @@ public class NerdBOT{
 
         //Perform PID Loop until we reach the targets
 
-        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))) && runtime.seconds()<=timeOut) {
+        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))) && runtime.seconds()<=timeOut){
 
             if (debugFlag)
                 RobotLog.d("STOP, opmode %b, distanceTargetReached %b, settling time %f, stopRequested %b",this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks),settlingtime.seconds(),stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled));
@@ -1061,7 +1063,7 @@ public class NerdBOT{
 
         //Perform PID Loop until we reach the targets
 
-        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled))) && runtime.seconds()<=timeOut) {
+        while (this.opmode.opModeIsActive() && ((!distanceTargetReached(xTicks, yTicks)) && (!stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled)))&& runtime.seconds()<=timeOut ) {
 
             if (debugFlag)
                 RobotLog.d("STOP, opmode %b, distanceTargetReached %b, settling time %f, stopRequested %b",this.opmode.opModeIsActive(), distanceTargetReached(xTicks, yTicks),settlingtime.seconds(),stopRequestedByTouchOrColorSensors(touchEnabled, colorEnabled));
@@ -1234,10 +1236,10 @@ public class NerdBOT{
 
             if(armAction == 4 && nerdArm.Timeout.seconds() < 0.5){
 
-                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 0,0.012, 0.0, 0.0009, 0, 0.5);
+                nerdArm.PIDArm(nerdArm.rearMotor.getCurrentPosition(), 10,0.01, 0.0, 0.0, 0, 0.5);
                 nerdArm.rearMotor.setPower(nerdArm.RSpeed);
 
-                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(), -10,0.0085, 0.001, 0.001, 1,0.5);
+                nerdArm.PIDArm(nerdArm.frontMotor.getCurrentPosition(), -10,0.01, 0.0, 0.0, 1,1);
                 nerdArm.frontMotor.setPower(nerdArm.FSpeed);
 
             }

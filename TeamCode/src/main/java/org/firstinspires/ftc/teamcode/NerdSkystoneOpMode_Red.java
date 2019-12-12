@@ -60,7 +60,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
     private OpenCVSkyStone VFC;
     double Skystone_Position=2;
     private final double FOUNDATION_OFFSET_FOR_LAST_DROP=16.0;
-    private final double ARM_OFFSET=0.0;
+    private final double ARM_OFFSET=-0.5;
     @Override
     public void runOpMode() {
 
@@ -151,7 +151,8 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
 
             if(dropNumber == MAX_BLOCK_DROPS) ydistance=ydistance+1; //-2 for brownbot
 
-            myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
+//            myNerdBOT.nerdPidDriveWithRampUpDown(  X_DIRECTION*-dropDistance, ydistance, 0, false, false); // go to foundation myNerdBOT.setMinMaxSpeeds(0.0,0.3);// go slower for more precise tasks
+            myNerdBOT.nerdPidDriveWithRampUpDown(X_DIRECTION*-dropDistance,ydistance,0);
 
             //Reset  PID gains for shorter travel in Y direction
 
@@ -160,6 +161,7 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
 
             if(dropNumber < MAX_BLOCK_DROPS) {
                 // If this is not the last block, we move to foundation and then drop
+                setPIDGainsForShortDistances();
                 myNerdBOT.setMinMaxSpeeds(0.0, 0.5);
                 myNerdBOT.nerdPidDrive(X_DIRECTION * 0.0, 8.0, 0.0, true, false); // approach foundation
 
@@ -204,7 +206,8 @@ public class NerdSkystoneOpMode_Red extends LinearOpMode {
                // setPIDGainsForRampUpDown();
                // myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
                 myNerdBOT.setMinMaxSpeeds(0.0,1.0);
-                myNerdBOT.nerdPidDriveWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,30,4);
+                myNerdBOT.nerdPidDriveWithArmAction(X_DIRECTION*4.0,-(FOUNDATION_OFFSET_FOR_LAST_DROP+9),X_DIRECTION*90,false,false,30,4);
+                // myNerdBOT.nerdPidDriveWithRampUpDownWithArmAction(X_DIRECTION*4.0,-FOUNDATION_OFFSET_FOR_LAST_DROP,X_DIRECTION*90,false,false,4);
 
              setPIDGainsForShortDistances();
             }

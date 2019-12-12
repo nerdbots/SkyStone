@@ -90,8 +90,8 @@ public class NerdParkOnlyOpMode extends LinearOpMode {
      //   myNerdBOT.nerdPidDrive(  X_DISTANCE, Y_DISTANCE, Z_ANGLE, true, false);
      // myNerdBOT.nerdPidDriveWithRampUpDown(-85,0,0);
        // myNerdBOT.nerdPidDriveWithRampUpDown(-96,-8,0);
-       myNerdBOT.nerdPidDriveWithRampUpDown(-96,0,0);
-       myNerdBOT.nerdPidDriveWithRampUpDown(96,0,0);
+       //myNerdBOT.nerdPidDriveWithRampUpDown(-96,0,0);
+       myNerdBOT.nerdPidDriveWithRampUpDown(96,-8,0);
 
 
         // myNerdBOT.nerdPidTurn(90);

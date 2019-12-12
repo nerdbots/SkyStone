@@ -84,12 +84,11 @@ NerdFullAuton_Red extends LinearOpMode {
         myNerdBOT.setMinMaxSpeeds(0.0,0.5);
 
 
-//        telemetry.addData("Init", "Completed");
-//        telemetry.update();
+        telemetry.addData("Init", "Completed");
+        telemetry.update();
 
 
         waitForStart();
-
         myNerdBOT.resetAngle();
         //made change here
 
@@ -103,7 +102,6 @@ NerdFullAuton_Red extends LinearOpMode {
 //        telemetry.update();
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run2");
-
 
 
         Arm.ArmLoop(-210,7, 0.8, 0.5); // -160, 0.5
