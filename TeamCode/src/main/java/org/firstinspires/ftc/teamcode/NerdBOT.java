@@ -88,6 +88,9 @@ public class NerdBOT{
 
 
 
+
+
+
    private ElapsedTime runtime = new ElapsedTime();
    private ElapsedTime settlingtime = new ElapsedTime();
 
@@ -383,17 +386,17 @@ public class NerdBOT{
         return ticks;
     }
 
-    public double ticksToInches(int ticks, double wheelDiameter, double wheelMountAngle ){
+   /* public double ticksToInches(int ticks, double wheelDiameter, double wheelMountAngle ){
         double circum = wheelDiameter * 3.14;
         double numberofWheelRotations = (double)ticks/ticksPerRotation;
         double wheelDistanceToTravel = numberofWheelRotations/circum;
         double straightDistanceToTravel = wheelDistanceToTravel / (Math.cos(Math.toRadians(wheelMountAngle) * GEAR_RATIO));
         return straightDistanceToTravel;
-    }
+    }*/
 
     //Function to find if the robot is within desired tolerance for Z angle.
 
-    boolean onTarget(double angle) {
+    /*boolean onTarget(double angle) {
         double error;
         boolean onTarget = false;
 
@@ -407,7 +410,7 @@ public class NerdBOT{
         }
 
         return onTarget;
-    }
+    }*/
 
     //Function to find out the Robot travel distance in X direction.
 

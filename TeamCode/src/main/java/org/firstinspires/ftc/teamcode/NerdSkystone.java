@@ -12,28 +12,35 @@ public class NerdSkystone {
         this.x_offset=x_offset;
     }
 
-    public void setPriority (int priority) {
+    /*public void setPriority (int priority) {
         this.priority = priority;
-    }
-    public int getPriority() {
+    }*/
+
+    /*public int getPriority() {
         return this.priority;
-    }
-    public void setX_offset (double x_offset){
+    }*/
+
+    /*public void setX_offset (double x_offset){
         this.x_offset = x_offset;
-    }
+    }*/
+
     public double getX_offset() {
         return this.x_offset;
     }
+
     public void setPosition (int position) {
         this.position = position;
     }
+
     public int getPosition() {
         return this.position;
     }
-    public void setisSkystone (boolean isSkystone) {
+
+    /*public void setisSkystone (boolean isSkystone) {
         this.isSkystone = isSkystone;
-    }
-    public boolean getisSkystone() {
+    }*/
+
+    /*public boolean getisSkystone() {
         return this.isSkystone;
-    }
+    }*/
 }
