@@ -29,6 +29,7 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 /**
@@ -43,73 +44,58 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="NerdFoundationAndParkOpMode_Blue", group="Linear Opmode")
-//@Disabled
-public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
-    private NerdBOT myNerdBOT ;
+@Autonomous(name="NerdVelocSense", group="a mogh")
 
-    private  double speed = 0.4;
-    boolean debugFlag = true;
-    private NerdArmMove Arm;
+public class NERD_Velocity_Test_V2_sensor extends LinearOpMode {
+    private NerdPIDCalc_MotionProfiling VPID;
 
-    //Things to be changed depending on dominant alliance partner (for parking and distance to foundation)
-    private final long SLEEP_TIME = 20000;
-    private final double X_DISTANCE_TO_FOUNDATION = 4.0;
-    private final double Y_DISTANCE_TO_FOUNDATION = 32.0;
-    private final double Z_ANGLE_FOUNDATION = 0.0;
-    private final double X_DISTANCE_TO_PARKING = 26.0;
-    private final double Y_DISTANCE_TO_PARKING = 0.0;
-    private final double Z_ANGLE_PARKING = 0.0;
-    private final double FORWARD_ON_PARKING_LINE = 0.0;
-    private final double X_DIRECTION=-1; //1 for Red (positive right direction)
+    private ElapsedTime ETime = new ElapsedTime();
+
+
+    private final int X_DIRECTION = -1; // 1 For Red Alliance, -1 for Blue
 
     @Override
     public void runOpMode() {
         //Create a NerdBOT object
-        myNerdBOT = new NerdBOT(this);
-        Arm = new NerdArmMove(this);
+        VPID = new NerdPIDCalc_MotionProfiling(this);
 
-        myNerdBOT.setDebug(debugFlag);
+        VPID.setFLGains(0.00732, 0.01, 0.0);
+        VPID.setFRGains(0.00732, 0.01, 0.0);
+        VPID.setRLGains(0.00732, 0.01, 0.0);
+        VPID.setRRGains(0.00732, 0.01, 0.0);
 
-        //Initialize Hardware
-        myNerdBOT.initializeHardware();
-        Arm.initHardware();
-        //Initialize the PID Calculators
-        myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
-        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
-        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0,debugFlag);
-        myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 0.02535,debugFlag);
-        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
-        myNerdBOT.setMinMaxSpeeds(0.0,0.6);
-
-
-        telemetry.addData("Init", "Completed");
-        telemetry.update();
-
+        VPID.initializeHardware();
 
         waitForStart();
-        myNerdBOT.resetAngle();
-
-        sleep(SLEEP_TIME);
 
 
-        //UNITS ARE IN INCHES
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run1");
+
+            for (double i = 0.1; i <= 1; i += 0.1) {
+
+                ETime.reset();
+
+                VPID.leftMotor.setPower(i);
+                VPID.rightMotor.setPower(i);
+                VPID.leftMotorB.setPower(i);
+                VPID.rightMotorB.setPower(i);
+
+                while (ETime.seconds() <= 1) {
+
+                    VPID.getVelocityForCurrentLoop();
+
+                    RobotLog.d("FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f", VPID.Velocities[0], VPID.Velocities[1], VPID.Velocities[2], VPID.Velocities[3]);
+
+                    telemetry.addData("FL Velocc", VPID.Velocities[0]);
+                    telemetry.addData("FR Velocc", VPID.Velocities[1]);
+                    telemetry.addData("RL Velocc", VPID.Velocities[2]);
+                    telemetry.addData("RR Velocc", VPID.Velocities[3]);
+                    telemetry.update();
 
 
-        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, false, false);
-        Arm.UseTheForce();
-        myNerdBOT.nerdPidDrive( 0.0, -36.0, 0, true, false);
-        Arm.ArmLoop(-10,7, 0.5, 0.5);
-        myNerdBOT.nerdPidDrive( X_DIRECTION*-42, 0, 0, false, false);
-//        Arm.UseTheForce();
-//        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-//        myNerdBOT.nerdPidDrive( X_DIRECTION*0, 12, 0, false, false);
-//        myNerdBOT.nerdPidDrive(X_DIRECTION*36, 0, 0, false, false);
-//
-//        myNerdBOT.nerdPidDrive(X_DIRECTION*-25, -12, 0, false, false);
 
 
+
+            }
+        }
     }
 }

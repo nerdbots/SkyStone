@@ -1,21 +1,30 @@
 package org.firstinspires.ftc.teamcode;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-public class NerdArmMove {
+import com.qualcomm.robotcore.util.RobotLog;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+public class NerdArmMoveNew {
 
     public DcMotor rearMotor;
     public DcMotor frontMotor;
 
     private HardwareMap hardwareMap;
     LinearOpMode opmode;
-    public NerdArmMove(LinearOpMode opmode) {
-        this.opmode = opmode;
-        this.hardwareMap = opmode.hardwareMap;
-    }
+     public NerdArmMoveNew(LinearOpMode opmode) {
+     this.opmode = opmode;
+     this.hardwareMap = opmode.hardwareMap;
+     }
     public void initHardware() {
         frontMotor = hardwareMap.dcMotor.get("frontMotor");
         rearMotor = hardwareMap.dcMotor.get("rearMotor");
@@ -57,6 +66,9 @@ public class NerdArmMove {
     private double RkI = 0.000; //0.000
     private double RkD = 0.000;//0.0009
 
+    private double REV = 0;
+    private double FEV = 0;
+
     private double MaxSpeedR = 0.8;
     private double MaxSpeedF = 0.5;
 
@@ -64,7 +76,7 @@ public class NerdArmMove {
 
     private boolean EndConditionArmF = false;
     private boolean EndConditionArmR = false;
-    public void ArmLoop(double TarPosR, double TarPosF, double MSR, double MSF) {
+    public void ArmLoop(String pickupPos) {
         RPrevError = 0;
         FPrevError = 0;
         RTotalError = 0;
@@ -79,9 +91,53 @@ public class NerdArmMove {
         RPIDTime.reset();
         Timeout.reset();
 
+        switch (pickupPos) {
+
+            case "ArmDown":
+                REV = -210;
+                FEV = -10;
+                MaxSpeedR = 0.8; //0.8
+                MaxSpeedF = 0.5; // 0.5
+                break;
+
+            case "Pickup":
+                REV = -210;
+                FEV = 160;
+                MaxSpeedR = 0.5; //0.5
+                MaxSpeedF = 1; //0.5
+                break;
+
+            case "Home":
+                REV = 210;
+                FEV = -10;
+                MaxSpeedR = 1; // 0.6
+                MaxSpeedF = 0.2; // 0.2
+                break;
+
+            case "Drop" :
+                REV = -210;
+                FEV = 160;
+                MaxSpeedR = 1; //0.5
+                MaxSpeedF = 0.5; //0.5
+                break;
+
+            case "HFArm" :
+                REV = -210;
+                FEV = -10;
+                MaxSpeedR = 0.5; //0.5
+                MaxSpeedF = 0.5; //0.5
+                break;
+        }
+
+
+
+
+
+
+
         while(Timeout.seconds() < MaxTimeOut) {
-            PIDArm(rearMotor.getCurrentPosition(), TarPosR, RkP, RkI, RkD, 0, MSR);
-            PIDArm(frontMotor.getCurrentPosition(), TarPosF, FkP, FkI, FkD, 1,MSF);
+            PIDArm(rearMotor.getCurrentPosition(), REV, RkP, RkI, RkD, 0, MaxSpeedR);
+            PIDArm(frontMotor.getCurrentPosition(), FEV, FkP, FkI, FkD, 1,MaxSpeedF);
 
             rearMotor.setPower(RSpeed);
             frontMotor.setPower(FSpeed);

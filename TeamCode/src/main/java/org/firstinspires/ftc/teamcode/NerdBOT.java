@@ -35,10 +35,8 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -135,7 +133,7 @@ public class NerdBOT{
 
     //For ARM
 
-    public NerdArmMove nerdArm;
+    public NerdArmMoveNew nerdArm;
 
     //Servos
 
@@ -153,7 +151,7 @@ public class NerdBOT{
     public  NerdBOT(LinearOpMode opmode){
         this.opmode = opmode;
         this.hardwareMap = opmode.hardwareMap;
-        this.nerdArm = new NerdArmMove(opmode);
+        this.nerdArm = new NerdArmMoveNew(opmode);
         this.nerdArm.initHardware();
     }
 

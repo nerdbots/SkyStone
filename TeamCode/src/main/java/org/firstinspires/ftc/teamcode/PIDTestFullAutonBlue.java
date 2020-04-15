@@ -29,7 +29,11 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -43,72 +47,29 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="NerdFoundationAndParkOpMode_Blue", group="Linear Opmode")
+@Autonomous(name="PIDTestFullautonBlueOnBot", group="Final")
 //@Disabled
-public class NerdFoundationAndParkOpMode_Blue extends LinearOpMode {
+public class PIDTestFullAutonBlue extends LinearOpMode {
     private NerdBOT myNerdBOT ;
 
-    private  double speed = 0.4;
     boolean debugFlag = true;
-    private NerdArmMove Arm;
-
-    //Things to be changed depending on dominant alliance partner (for parking and distance to foundation)
-    private final long SLEEP_TIME = 20000;
-    private final double X_DISTANCE_TO_FOUNDATION = 4.0;
-    private final double Y_DISTANCE_TO_FOUNDATION = 32.0;
-    private final double Z_ANGLE_FOUNDATION = 0.0;
-    private final double X_DISTANCE_TO_PARKING = 26.0;
-    private final double Y_DISTANCE_TO_PARKING = 0.0;
-    private final double Z_ANGLE_PARKING = 0.0;
-    private final double FORWARD_ON_PARKING_LINE = 0.0;
-    private final double X_DIRECTION=-1; //1 for Red (positive right direction)
-
+    private ElapsedTime runtime = new ElapsedTime();
     @Override
     public void runOpMode() {
         //Create a NerdBOT object
         myNerdBOT = new NerdBOT(this);
-        Arm = new NerdArmMove(this);
-
         myNerdBOT.setDebug(debugFlag);
 
         //Initialize Hardware
         myNerdBOT.initializeHardware();
-        Arm.initHardware();
-        //Initialize the PID Calculators
-        myNerdBOT.initializeXPIDCalculator(0.0025, 0.0, 0.0, debugFlag);
-        myNerdBOT.initializeYPIDCalculator(0.0025, 0.0, 0.0,debugFlag);
-        myNerdBOT.initializeZPIDCalculator(0.015, 0.000, 0.0,debugFlag);
-        myNerdBOT.initializeTurnPIDCalculator(0.015, 0.000, 0.02535,debugFlag);
-        //Set Min and Max Speed - Optional (default min=0.1, max=0.6 if not changed below)
-        myNerdBOT.setMinMaxSpeeds(0.0,0.6);
 
-
-        telemetry.addData("Init", "Completed");
-        telemetry.update();
 
 
         waitForStart();
         myNerdBOT.resetAngle();
+        runtime.reset();
+        
 
-        sleep(SLEEP_TIME);
-
-
-        //UNITS ARE IN INCHES
-        if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Run1");
-
-
-        myNerdBOT.nerdPidDrive(  X_DIRECTION*X_DISTANCE_TO_FOUNDATION, Y_DISTANCE_TO_FOUNDATION, Z_ANGLE_FOUNDATION, false, false);
-        Arm.UseTheForce();
-        myNerdBOT.nerdPidDrive( 0.0, -36.0, 0, true, false);
-        Arm.ArmLoop(-10,7, 0.5, 0.5);
-        myNerdBOT.nerdPidDrive( X_DIRECTION*-42, 0, 0, false, false);
-//        Arm.UseTheForce();
-//        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
-//        myNerdBOT.nerdPidDrive( X_DIRECTION*0, 12, 0, false, false);
-//        myNerdBOT.nerdPidDrive(X_DIRECTION*36, 0, 0, false, false);
-//
-//        myNerdBOT.nerdPidDrive(X_DIRECTION*-25, -12, 0, false, false);
 
 
     }

@@ -59,10 +59,8 @@ public class FinalTeleop extends LinearOpMode {
     Servo servoPitch;
     Servo servoAngle;
     DcMotor tapeMotor;
-
-    double positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
-    double positionAngle = 0.76;  //(MAX_POS - MIN_POS) / 2;
-    double tapeSpeed = 0.0;
+    Servo foundation1;
+    Servo foundation2;
 
     Orientation angles;
     Acceleration gravity;
@@ -72,7 +70,7 @@ public class FinalTeleop extends LinearOpMode {
     double globalAngle = 0.0;
 
 
-    static final double INCREMENT = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static /*final*/ double INCREMENT = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static /*final*/ int CYCLE_MS = 50; //50    // period of each cycle
     static final double MAX_POS = 1.0;     // Maximum rotational position
     static final double MIN_POS = 0.0;     // Minimum rotational position
@@ -111,9 +109,9 @@ public class FinalTeleop extends LinearOpMode {
     private double RkI = 0.000; //0.000
     private double RkD = 0.000;//0.0009
 
-    private double ZkP = 0.0075; //0.0321, 0.015; 0.0225+
+    private double ZkP = 0.011; //0.011
     private double ZkI = 0.000; //0.000
-    private double ZkD = 0.00175;//0.00535, 1.4, 0.003
+    private double ZkD = 0.00145;//0.00145
 
 
     private double REV = 0;
@@ -139,6 +137,9 @@ public class FinalTeleop extends LinearOpMode {
         servoPitch = hardwareMap.get(Servo.class, "TurretPitch");
         servoAngle = hardwareMap.get(Servo.class, "TurretAngle");
         tapeMotor = hardwareMap.get(DcMotor.class, "TapeMotor");
+
+        foundation1 = hardwareMap.get(Servo.class, "foundation1");
+        foundation2 = hardwareMap.get(Servo.class, "foundation2");
 
 
         //  globalAngle = 0;/imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
@@ -184,6 +185,14 @@ public class FinalTeleop extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
+
+
+        double positionPitch = 0.52;  // (MAX_POS - MIN_POS) / 2;
+        double positionAngle = 0.15;  //(MAX_POS - MIN_POS) / 2; 0.25
+        double tapeSpeed = 0.0;
+
+
+
 
         double LMP = 0;
         double RMP = 0;
@@ -249,41 +258,43 @@ public class FinalTeleop extends LinearOpMode {
             }
 
 
-            if (gamepad1.left_bumper) {
-                if ((gamepad1.right_bumper)) {
-                    CYCLE_MS = 10;
-                } else {
+            //if (gamepad1.left_bumper) {
+                if ((gamepad2.right_trigger == 1)) {
                     CYCLE_MS = 50;
+                    INCREMENT = 0.01;
+                } else {
+                    CYCLE_MS = 10;
+                    INCREMENT = 0.05;
                 }
-                if (gamepad1.right_stick_y < -0.5) {
+                if (gamepad2.right_stick_y < -0.5) {
                     positionPitch += INCREMENT;
                     if (positionPitch >= MAX_POS) {
                         positionPitch = MAX_POS;
                     }
                 }
-                if (gamepad1.right_stick_y > 0.5) {
+                if (gamepad2.right_stick_y > 0.5) {
                     positionPitch -= INCREMENT;
                     if (positionPitch <= MIN_POS) {
                         positionPitch = MIN_POS;
                     }
                 }
-                if (gamepad1.right_stick_x > 0.5) {
+                if (gamepad2.right_stick_x < 0.5) {
                     positionAngle += INCREMENT;
                     if (positionAngle >= MAX_POS) {
                         positionAngle = MAX_POS;
                     }
                 }
-                if (gamepad1.right_stick_x < -0.5) {
+                if (gamepad2.right_stick_x > -0.5) {
                     positionAngle -= INCREMENT;
                     if (positionAngle <= MIN_POS) {
                         positionAngle = MIN_POS;
                     }
                 }
-                //if (  gamepad1.left_stick_x < -0.1) {
-                //    tapeSpeed =   gamepad1.left_stick_x;
+                //if (  gamepad2.left_stick_x < -0.1) {
+                //    tapeSpeed =   gamepad2.left_stick_x;
                 //}
-                if (Math.abs(gamepad1.left_stick_x) > 0.1) {
-                    tapeSpeed = gamepad1.left_stick_x;
+                if (Math.abs(gamepad2.left_stick_y) > 0.1) {
+                    tapeSpeed = gamepad2.left_stick_y;
                 } else {
                     tapeSpeed = 0;
                 }
@@ -301,7 +312,7 @@ public class FinalTeleop extends LinearOpMode {
 
                 sleep(CYCLE_MS);
                 idle();
-            } else {
+            //} else {
 
 
                 if (gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0) {
@@ -386,7 +397,7 @@ public class FinalTeleop extends LinearOpMode {
 
                 if (gamepad2.a) { //pick up
                     REV = -210;
-                    FEV = -10;
+                    FEV = 10;
                     MaxSpeedR = 0.8; //0.8
                     MaxSpeedF = 0.5; // 0.5
                 } else if (gamepad2.b) { //grab/fast drop
@@ -399,7 +410,7 @@ public class FinalTeleop extends LinearOpMode {
                     FEV = 160;
                     MaxSpeedR = 0.1; //0.5
                     MaxSpeedF = 1; //0.5
-                } else if (gamepad2.x) { //home pickup
+                } else if (gamepad2.x || gamepad1.x) { //home pickup
                     REV = 210;
                     FEV = -10;
                     MaxSpeedR = 1; // 0.6
@@ -409,7 +420,7 @@ public class FinalTeleop extends LinearOpMode {
                     FEV = -10;
                     MaxSpeedR = 0.5; // 0.6
                     MaxSpeedF = 0.5; // 0.2
-                } else if (gamepad2.left_bumper) { //foundation
+                } else if (gamepad1.left_bumper) { //foundation
                     REV = -500;
                     FEV = -10;
                     MaxSpeedR = 1; //0.8
@@ -430,6 +441,14 @@ public class FinalTeleop extends LinearOpMode {
 
                 rearMotor.setPower(RSpeed);
                 frontMotor.setPower(FSpeed);
+
+
+                if(gamepad1.start) {
+                    foundation1.setPosition(foundation1.getPosition());
+                    foundation1.setPosition(foundation1.getPosition());
+                }
+
+
 
                 //add telemetry
 
@@ -459,119 +478,119 @@ public class FinalTeleop extends LinearOpMode {
 
                 telemetry.addData("Status", "Running");
                 telemetry.update();
-            }
+          //  }
 
         }
     }
 
         //0 is rearMotor 1 is frontMotor \/
-        public void PIDArm ( double EV, double TPos, double kP, double kI, double kD, int motor){
-
-            double DError = 0;
-            int DBanMin = -1;
-            int DBanMax = 1;
-            int MaxError = 10;
-            double error = 0;
-            double speed = 0;
-            double TotalError = 0;
-            double PrevError = 0;
-            double MaxSpeed = 0;
-
-
-            if (motor == 0) {
-                TotalError = RTotalError;
-                PrevError = RPrevError;
-                PIDTime = RPIDTime;
-                MaxSpeed = MaxSpeedR;
-            } else if (motor == 1) {
-                TotalError = FTotalError;
-                PrevError = FPrevError;
-                PIDTime = FPIDTime;
-                MaxSpeed = MaxSpeedF;
-            } else {
-                TotalError = ZTotalError;
-                PrevError = ZPrevError;
-                PIDTime = ZPIDTime;
-                MaxSpeed = MaxSpeedZ;
-
-            }
-
-
-            //calculate error (Proportional)
-            error = TPos - EV;
-
-            //Calculate Total error (Integral)
-            TotalError = (error * PIDTime.seconds()) + TotalError;
-
-            //do deadband
-            if (DBanMax > error && error > DBanMin) {
-                error = 0;
-                //TotalError = 0;
-            }
-
-            //calculate delta error (Derivative)
-            DError = -(EV/*error*/ - PrevError) / PIDTime.seconds();
-
-            //reset elapsed timer
-            PIDTime.reset();
-
-            //Max total error
-            if (Math.abs(TotalError) > MaxError) {
-
-
-                if (TotalError > 0) {
-                    TotalError = MaxError;
-                } else {
-                    TotalError = -MaxError;
-                }
-
-            }
-
-
-            //Calculate final speed
-            speed = (error * kP) + (TotalError * kI) + (DError * kD);
-
-
-            //Make sure speed is no larger than MaxSpeed
-            if (Math.abs(speed) > MaxSpeed) {
-                if (speed > 0) {
-                    speed = MaxSpeed;
-                } else {
-                    speed = -MaxSpeed;
-                }
-            }
-            PrevError = EV/*error*/;
-
-            if (motor == 0) {
-                RSpeed = speed;
-                RPrevError = PrevError;
-                RTotalError = TotalError;
-            } else if (motor == 1) {
-                FSpeed = speed;
-                FPrevError = PrevError;
-                FTotalError = TotalError;
-            } else {
-                ZSpeed = speed;
-                ZPrevError = PrevError;
-                ZTotalError = TotalError;
-            }
-            //set previous error to error
-
-
-            //add telemetry
-
-
-        }
-
         private void resetAngle () {
             lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
             globalAngle = 0;
         }
 
+    public void PIDArm ( double EV, double TPos, double kP, double kI, double kD, int motor){
+
+        double DError = 0;
+        int DBanMin = -1;
+        int DBanMax = 1;
+        int MaxError = 10;
+        double error = 0;
+        double speed = 0;
+        double TotalError = 0;
+        double PrevError = 0;
+        double MaxSpeed = 0;
+
+
+        if (motor == 0) {
+            TotalError = RTotalError;
+            PrevError = RPrevError;
+            PIDTime = RPIDTime;
+            MaxSpeed = MaxSpeedR;
+        } else if (motor == 1) {
+            TotalError = FTotalError;
+            PrevError = FPrevError;
+            PIDTime = FPIDTime;
+            MaxSpeed = MaxSpeedF;
+        } else {
+            TotalError = ZTotalError;
+            PrevError = ZPrevError;
+            PIDTime = ZPIDTime;
+            MaxSpeed = MaxSpeedZ;
+
+        }
+
+
+        //calculate error (Proportional)
+        error = TPos - EV;
+
+        //Calculate Total error (Integral)
+        TotalError = (error * PIDTime.seconds()) + TotalError;
+
+        //do deadband
+        if (DBanMax > error && error > DBanMin) {
+            error = 0;
+            //TotalError = 0;
+        }
+
+        //calculate delta error (Derivative)
+        DError = -(EV/*error*/ - PrevError) / PIDTime.seconds();
+
+        //reset elapsed timer
+        PIDTime.reset();
+
+        //Max total error
+        if (Math.abs(TotalError) > MaxError) {
+
+
+            if (TotalError > 0) {
+                TotalError = MaxError;
+            } else {
+                TotalError = -MaxError;
+            }
+
+        }
+
+
+        //Calculate final speed
+        speed = (error * kP) + (TotalError * kI) + (DError * kD);
+
+
+        //Make sure speed is no larger than MaxSpeed
+        if (Math.abs(speed) > MaxSpeed) {
+            if (speed > 0) {
+                speed = MaxSpeed;
+            } else {
+                speed = -MaxSpeed;
+            }
+        }
+        PrevError = EV/*error*/;
+
+        if (motor == 0) {
+            RSpeed = speed;
+            RPrevError = PrevError;
+            RTotalError = TotalError;
+        } else if (motor == 1) {
+            FSpeed = speed;
+            FPrevError = PrevError;
+            FTotalError = TotalError;
+        } else {
+            ZSpeed = speed;
+            ZPrevError = PrevError;
+            ZTotalError = TotalError;
+        }
+        //set previous error to error
+
+
+        //add telemetry
+
+
+    }
+
 
         //Function to get the angle of the Gyro sensor
-        private double getAngle () {
+    private double getAngle () {
 
             Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             double deltaAngle;
@@ -588,5 +607,5 @@ public class FinalTeleop extends LinearOpMode {
 
             return globalAngle;
         }
-    }
+}
 

@@ -43,11 +43,11 @@ import com.qualcomm.robotcore.util.RobotLog;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="NerdFullAuton_Blue", group="Final")
+@Autonomous(name="ArmTest", group="Final")
 //@Disabled
-public class NerdFullAuton_Blue extends LinearOpMode {
+public class NerdArmTest extends LinearOpMode {
     private NerdBOT myNerdBOT ;
-    private NerdArmMove Arm;
+    private NerdArmMoveNew Arm;
     private double Skystone_Position = 0;
     private double position_run3_x = 90.0;
     private double offset_x_run3 = 0;
@@ -63,7 +63,7 @@ public class NerdFullAuton_Blue extends LinearOpMode {
     public void runOpMode() {
         //Create a NerdBOT object
         myNerdBOT = new NerdBOT(this);
-        Arm = new NerdArmMove(this);
+        Arm = new NerdArmMoveNew(this);
         myNerdBOT.setDebug(debugFlag);
         //VFC = new VuforiaFindCase2(this);
         VFC = new OpenCVSkyStone(this);
@@ -87,7 +87,7 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 
 
         waitForStart();
-        myNerdBOT.resetAngle();
+           myNerdBOT.resetAngle();
         //made change here
 
 
@@ -103,7 +103,7 @@ public class NerdFullAuton_Blue extends LinearOpMode {
             RobotLog.d("NerdSampleOpMode - Run2");
 
 
-        Arm.ArmLoop(-210,-10, 0.8, 0.5); // -160, 0.5
+        Arm.ArmLoop("ArrmDown"); // -160, 0.5
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.4);
 
@@ -138,13 +138,13 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 
 
 
-          Arm.ArmLoop(-210,160, 0.5, 1.0); // grab 1
+          Arm.ArmLoop("Pickup"); // grab 1
           //sleep(500);
-           Arm.ArmLoop(210,-10, 1.0, 0.2); // home
+           Arm.ArmLoop("Home"); // home
         if (debugFlag)
             RobotLog.d("NerdSampleOpMode - Run3");
 
-/*
+
         myNerdBOT.nerdPidDrive( 0.0, -5.0, 0); // move ack to miss bridge
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); // Go faster when going longer distance.
@@ -163,8 +163,8 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 
 
    //     Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-210,160, 0.5, 1.0);// put down the block
-        Arm.ArmLoop(-210,-10, 0.5, 0.5);  // home front arm
+        Arm.ArmLoop("Pickup");// put down the block
+        Arm.ArmLoop("HFARm");  // home front arm
 
 
 
@@ -178,7 +178,7 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 
         Arm.KillTheForce();
 
-        Arm.ArmLoop(10,-10, 0.8, 0.5); // home arms
+        Arm.ArmLoop("Home"); // home arms
 
 
 
@@ -190,7 +190,7 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*61 + X_DIRECTION*drop_2_offset, -4.0, 0); // go to other side of the field
 
-        Arm.ArmLoop(-210,-10,0.8,0.5); // drop one arm
+        Arm.ArmLoop("ArmDown"); // drop one arm
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.3); // go slower for more precise tasks
 
@@ -201,8 +201,8 @@ public class NerdFullAuton_Blue extends LinearOpMode {
 //        Arm.ArmLoop(-160,143, 0.5, 0.8);// put down the block
 //        Arm.ArmLoop(-10,7, 0.8, 0.2);  // squeeze foundation and return front arm up
 
-        Arm.ArmLoop(-210,160, 0.5, 1.0);// drop second arm
-        Arm.ArmLoop(210,-10, 1.0, 0.2);  // return both arms up
+        Arm.ArmLoop("Pickup");// drop second arm
+        Arm.ArmLoop("Home");  // return both arms up
 
 
         myNerdBOT.setMinMaxSpeeds(0.0,0.85); //
@@ -214,14 +214,23 @@ public class NerdFullAuton_Blue extends LinearOpMode {
         myNerdBOT.nerdPidDrive( X_DIRECTION*0, 21, X_DIRECTION*90, false, false); // 19 CHANGED THIS; 18
 
      //   Arm.ArmLoop(-60,135, 0.2, 0.6); // half-drop
-        Arm.ArmLoop(-210,160, 0.5, 1.0);// put down the block
-        Arm.ArmLoop(-160,-10, 0.5, 0.5);  // return rear arm up
-        Arm.ArmLoop(10,-10, 0.5, 0.5);  // return both arm up
+        Arm.ArmLoop("Pickup");// put down the block
+        Arm.ArmLoop("HFArm");  // return rear arm up
+        Arm.ArmLoop("Home");  // return both arm up
 
         myNerdBOT.nerdPidDrive( X_DIRECTION*1, -26, X_DIRECTION*90); //park CHANGED THIS; 23
 
 
         if (debugFlag)
-            RobotLog.d("NerdSampleOpMode - Completed");*/
+            RobotLog.d("NerdSampleOpMode - Completed");
+
+        Arm.ArmLoop("ArmDown");
+        sleep(500);
+        Arm.ArmLoop("Pickup");
+        sleep(500);
+        Arm.ArmLoop("Home");
+        sleep(500);
+        Arm.ArmLoop("Drop");
+
     }
 }
