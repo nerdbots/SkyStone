@@ -56,21 +56,10 @@ import java.util.List;
  * Remove a @Disabled the on the next line or two (if present) to add this opmode to the Driver Station OpMode list,
  * or add a @Disabled annotation to prevent this OpMode from being added to the Driver Station
  */
-public class NerdPIDCalc_MotionProfiling {
+public class NerdPIDCalc_MotionProfiling2 {
     private LinearOpMode opmode;
     private HardwareMap hardwareMap;
     private ElapsedTime moveTime = new ElapsedTime();
-
-    double angles;
-    Acceleration gravity;
-
-    Orientation             lastAngles = new Orientation();
-
-    double globalAngle = 0.0;
-
-    private BNO055IMU imu = null;   // Gyro device
-
-
     public DcMotor leftMotor;
     public DcMotor rightMotor;
     public DcMotor leftMotorB;
@@ -78,7 +67,7 @@ public class NerdPIDCalc_MotionProfiling {
     private ElapsedTime PIDTime = new ElapsedTime();
     private double FLPrevError = 0;
     private double FLTotalError = 0;
-    public double FLVeloc = 0;
+    private double FLVeloc = 0;
     private double FLMaxVeloc = 10;
     private double FLP = 0;
     private double FLI = 0;
@@ -89,7 +78,7 @@ public class NerdPIDCalc_MotionProfiling {
     private ElapsedTime FLPIDTime = new ElapsedTime();
     private double FRPrevError = 0;
     private double FRTotalError = 0;
-    public double FRVeloc = 0;
+    private double FRVeloc = 0;
     private double FRMaxVeloc = 10;
     private double FRP = 0;
     private double FRI = 0;
@@ -100,7 +89,7 @@ public class NerdPIDCalc_MotionProfiling {
     private ElapsedTime FRPIDTime = new ElapsedTime();
     private double RLPrevError = 0;
     private double RLTotalError = 0;
-    public double RLVeloc = 0;
+    private double RLVeloc = 0;
     private double RLMaxVeloc = 10;
     private double RLP = 0;
     private double RLI = 0;
@@ -111,7 +100,7 @@ public class NerdPIDCalc_MotionProfiling {
     private ElapsedTime RLPIDTime = new ElapsedTime();
     private double RRPrevError = 0;
     private double RRTotalError = 0;
-    public double RRVeloc = 0;
+    private double RRVeloc = 0;
     private double RRMaxVeloc = 10;
     private double RRP = 0;
     private double RRI = 0;
@@ -120,19 +109,6 @@ public class NerdPIDCalc_MotionProfiling {
     private double RRkI;
     private double RRkD;
     private ElapsedTime RRPIDTime = new ElapsedTime();
-
-    private double gyroPrevError = 0;
-    private double gyroTotalError = 0;
-    private double gyroVeloc = 0;
-    private double gyroMaxVeloc = 10;
-    private double gyroP = 0;
-    private double gyroI = 0;
-    private double gyroD = 0;
-    private double gyrokP;
-    private double gyrokI;
-    private double gyrokD;
-    private ElapsedTime gyroPIDTime = new ElapsedTime();
-
 
     public ElapsedTime driveTime = new ElapsedTime();
 
@@ -180,10 +156,6 @@ public class NerdPIDCalc_MotionProfiling {
 
     private double sum = 0;
 
-    public double rAverageSize = 6;
-
-    public double Kramp;
-
     ElapsedTime runtime = new ElapsedTime();
     double prevRuntime = 0.0;
     double frontLeftVelocity = 0, frontRightVelocity = 0, rearLeftVelocity = 0, rearRightVelocity = 0;
@@ -208,7 +180,7 @@ public class NerdPIDCalc_MotionProfiling {
 
     public double maxPower = 0;
 
-    public NerdPIDCalc_MotionProfiling(LinearOpMode opmode) {
+    public NerdPIDCalc_MotionProfiling2(LinearOpMode opmode) {
         this.opmode = opmode;
         this.hardwareMap = opmode.hardwareMap;
     }
@@ -235,12 +207,6 @@ public class NerdPIDCalc_MotionProfiling {
         RRkP = kPV;
         RRkI = kIV;
         RRkD = kDV;
-    }
-
-    public void setGyroGains(double kPV, double kIV, double kDV) {
-        gyrokP = kPV;
-        gyrokI = kIV;
-        gyrokD = kDV;
         moveTime.reset();
     }
 
@@ -278,13 +244,6 @@ public class NerdPIDCalc_MotionProfiling {
         RRPIDTime.reset();
         rightMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-    public void resetgyroPID_angle() {
-        gyroPrevError = 0;
-        gyroTotalError = 0;
-        gyroVeloc = 0;
-        gyroPIDTime.reset();
-
     }
 
     public void PIDVeloc(double CurrVeloc, double TVeloc, String Motor) {
@@ -334,16 +293,6 @@ public class NerdPIDCalc_MotionProfiling {
                 kP = RRkP;
                 kI = RRkI;
                 kD = RRkD;
-                break;
-
-            case "gyro":
-                TotalError = gyroTotalError;
-                PrevError = gyroPrevError;
-                MaxVeloc = gyroMaxVeloc;
-                PIDTime = gyroPIDTime;
-                kP = gyrokP;
-                kI = gyrokI;
-                kD = gyrokD;
                 break;
         }
 
@@ -433,17 +382,6 @@ public class NerdPIDCalc_MotionProfiling {
                 opmode.telemetry.addData("totalErrorFL", TotalError);
                 if (debugFlag)
                     RobotLog.d("Time - %f, RR error - %f, RR Target Veloc - %f, RR Input Veloc - %f, RR Output Veloc - %f", maxVelocTime.seconds(), error, TVeloc, CurrVeloc, speed);
-                break;
-
-            case "gyro":
-                gyroTotalError = TotalError;
-                gyroPrevError = PrevError;
-                gyroVeloc = speed;
-                gyroP = error;
-                gyroI = TotalError;
-                gyroD = DError;
-                opmode.telemetry.addData("error gyro", error);
-                opmode.telemetry.addData("totalError gyro", TotalError);
                 break;
 
         }
@@ -549,14 +487,6 @@ public class NerdPIDCalc_MotionProfiling {
             opmode.telemetry.addLine("Inside opmodeisactive");
             // opmode.telemetry.update();
 
-//            if(debugFlag2){
-//                RobotLog.d("Runtime, Target Veloc, FL Veloc, FR Veloc, RL Veloc, RR Veloc, FLP, FLI, RRP, RRI");
-//            }
-
-            if(debugFlag2){
-                RobotLog.d("Runtime, Target Veloc, FL Veloc, FR Veloc, RL Veloc, RR Veloc, FLP, FRP, RLP, RRP");
-            }
-
 
             // opmode.sleep(1000);
             leftMotor.setPower(LWM * 1);
@@ -628,37 +558,21 @@ public class NerdPIDCalc_MotionProfiling {
                 //    opmode.telemetry.update();
                 //     opmode.sleep(1000);
 
-                FLInVeloc = Velocities[0];
-                FRInVeloc = Velocities[1];
-                RLInVeloc = Velocities[2];
-                RRInVeloc = Velocities[3];
 
                 MaxVeloc_20_80 = 60;
-                PIDVeloc(FLrunningAverage(FLInVeloc), LWM * MaxVeloc_20_80, "FL");
-                PIDVeloc(FRrunningAverage(FRInVeloc), RWM * MaxVeloc_20_80, "FR");
-                PIDVeloc(RLrunningAverage(RLInVeloc), LWM * MaxVeloc_20_80, "RL");
-                PIDVeloc(RRrunningAverage(RRInVeloc), RWM * MaxVeloc_20_80, "RR");
-
-//                PIDVeloc(FLInVeloc, LWM * MaxVeloc_20_80, "FL");
-//                PIDVeloc(FRInVeloc, RWM * MaxVeloc_20_80, "FR");
-//                PIDVeloc(RLInVeloc, LWM * MaxVeloc_20_80, "RL");
-//                PIDVeloc(RRInVeloc, RWM * MaxVeloc_20_80, "RR");
-
-              //  PIDVeloc(getAngle(), 0, "gyro");
+                PIDVeloc(runningAverage(Velocities[0], "FL"), LWM * MaxVeloc_20_80, "FL");
+                PIDVeloc(runningAverage(Velocities[1], "FR"), RWM * MaxVeloc_20_80, "FR");
+                PIDVeloc(runningAverage(Velocities[2], "RL"), LWM * MaxVeloc_20_80, "RL");
+                PIDVeloc(runningAverage(Velocities[3], "RR"), RWM * MaxVeloc_20_80, "RR");
 
                 opmode.telemetry.addLine("PID done");
                 //  opmode.telemetry.update();
                 //      opmode.sleep(1000);
 
-//                leftMotor.setPower(FLVeloc-gyroVeloc);
-//                rightMotor.setPower(FRVeloc+gyroVeloc);
-//                leftMotorB.setPower(RLVeloc-gyroVeloc);
-//                rightMotorB.setPower(RRVeloc+gyroVeloc);
-
-//                leftMotor.setPower(FLVeloc);
-//                rightMotor.setPower(FRVeloc);
-//                leftMotorB.setPower(RLVeloc);
-//                rightMotorB.setPower(RRVeloc);
+                leftMotor.setPower(FLVeloc);
+                rightMotor.setPower(FRVeloc);
+                leftMotorB.setPower(RLVeloc);
+                rightMotorB.setPower(RRVeloc);
 
 //                leftMotor.setPower(-1);
 //                rightMotor.setPower(1);
@@ -697,18 +611,9 @@ public class NerdPIDCalc_MotionProfiling {
                 // opmode.sleep(40);
 
                   //  RobotLog.d("Runtime - %f, FL Power - %f, FR Power - %f, RL Power - %f, RR Power - %f", moveTime.seconds(), FLVeloc, FRVeloc, RLVeloc, RRVeloc);
-//                if(debugFlag2){
-//                  RobotLog.a("Runtime - %f, Target Veloc - %f, FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f, FLP - %f, FLI - %f, RRP - %f, RRI - %f", moveTime.seconds(), MaxVeloc_20_80, -Velocities[0], Velocities[1], -Velocities[2], Velocities[3], -FLP, -FLI, RRP, RRI);
-//                }
-//                if(debugFlag2){
-//                    RobotLog.d(" %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", moveTime.seconds(), MaxVeloc_20_80, -Velocities[0], Velocities[1], -Velocities[2], Velocities[3], -FLP, -FLI, RRP, RRI);
-//                }
-
                 if(debugFlag2){
-                    RobotLog.d(" %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", moveTime.seconds(), MaxVeloc_20_80, -Velocities[0], Velocities[1], -Velocities[2], Velocities[3], -leftMotor.getPower(), rightMotor.getPower(), -leftMotorB.getPower(), rightMotorB.getPower());
+                  RobotLog.d("Runtime - %f, Target Veloc - %f, FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f, FLP - %f, FLI - %f, RRP - %f, RRI - %f", moveTime.seconds(), MaxVeloc_20_80, -Velocities[0], Velocities[1], -Velocities[2], Velocities[3], -FLP, -FLI, RRP, RRI);
                 }
-
-
 //                if(debugFlag2)
            //       RobotLog.d("Runtime - %f, Target Veloc - %f, FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f", moveTime.seconds(), MaxVeloc_20_80, Velocities[0], Velocities[1], Velocities[2], Velocities[3]);
                 //   RobotLog.d("Runtime - %f, FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f, FL Power - %f, FR Power - %f, RL Power - %f, RR Power - %f, FLOut - %f, FROut - %f, RLOut - %f, RROut - %f", moveTime.seconds(), Velocities[0], Velocities[1], Velocities[2], Velocities[3], leftMotor.getPower(), rightMotor.getPower(), leftMotorB.getPower(), rightMotorB.getPower(), FLVeloc, FRVeloc, RLVeloc, RRVeloc);
@@ -732,144 +637,57 @@ public class NerdPIDCalc_MotionProfiling {
         //this.leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         //this.leftMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-
-        this.imu = this.hardwareMap.get(BNO055IMU.class, "imu");
-        this.imu.initialize(parameters);
-        this.imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-
-        resetAngle();
-
     }
 
-    public double FLrunningAverage(double inputValueFL) {
+    public double runningAverage(double inputValue, String motor) {
+
+        switch (motor) {
+            case ("FL"):
+                rAverage = FLrAverage;
+                break;
+            case ("FR"):
+                rAverage = FRrAverage;
+                break;
+            case ("RL"):
+                rAverage = RLrAverage;
+                break;
+            case ("RR"):
+                rAverage = RRrAverage;
+                break;
+        }
 
 
-        FLrAverage.add(inputValueFL);
+        rAverage.add(inputValue);
 
-        if (rAverage.size() > rAverageSize)
-            FLrAverage.remove(0);
+        //if (rAverage.size() > 4)
+        rAverage.remove(0);
 
         sum = 0;
         for(int i = 0; i < rAverage.size(); i++)
-            sum += FLrAverage.get(i);
+            sum += rAverage.get(i);
 
-        opmode.telemetry.addData("sumFL", sum);
-
-
-        //return inputValue;
-        return sum/FLrAverage.size();
+        opmode.telemetry.addData("sum", sum);
 
 
-    }
-    public double FRrunningAverage(double inputValueFR) {
 
+        switch (motor) {
+            case ("FL"):
+                FLrAverage = rAverage;
+                break;
+            case ("FR"):
+                FRrAverage = rAverage;
+                break;
+            case ("RL"):
+                RLrAverage = rAverage;
+                break;
+            case ("RR"):
+                RRrAverage = rAverage;
+                break;
+        }
 
-        FRrAverage.add(inputValueFR);
+        return inputValue;
+        //return sum/4;
 
-        if (rAverage.size() > rAverageSize)
-            FRrAverage.remove(0);
-
-        sum = 0;
-        for(int i = 0; i < rAverage.size(); i++)
-            sum += FRrAverage.get(i);
-
-        opmode.telemetry.addData("sumFR", sum);
-
-
-        //return inputValue;
-        return sum/FRrAverage.size();
-
-
-    }
-    public double RLrunningAverage(double inputValueRL) {
-
-
-        RLrAverage.add(inputValueRL);
-
-        if (rAverage.size() > rAverageSize)
-            RLrAverage.remove(0);
-
-        sum = 0;
-        for(int i = 0; i < rAverage.size(); i++)
-            sum += RLrAverage.get(i);
-
-        opmode.telemetry.addData("sumRL", sum);
-
-
-        //return inputValue;
-        return sum/RLrAverage.size();
-
-
-    }
-    public double RRrunningAverage(double inputValueRR) {
-
-
-        RRrAverage.add(inputValueRR);
-
-        if (rAverage.size() > rAverageSize)
-            RRrAverage.remove(0);
-
-        sum = 0;
-        for(int i = 0; i < rAverage.size(); i++)
-            sum += RRrAverage.get(i);
-
-        opmode.telemetry.addData("sumRR", sum);
-
-
-        //return inputValue;
-        return sum/RRrAverage.size();
-
-
-    }
-
-    public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        globalAngle = 0;
-    }
-    public  double getAngle(){
-
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastAngles = angles;
-
-        return globalAngle;
-    }
-
-    public int ramp(int VcI, int VtarI) {
-
-        Double Vc = Double.valueOf(VcI);
-
-        Double Vtar = Double.valueOf(VtarI);
-
-        Vc = Vc - (Vc - Vtar) * Kramp;
-
-        return (int) Math.round(Vc);
 
     }
 }
