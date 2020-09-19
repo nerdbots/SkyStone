@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -45,9 +45,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name="NerdVelocSense", group="a mogh")
+@Autonomous(name="NerdVelocRampUpDown", group="a mogh")
 
-public class NERD_Velocity_Test_V2_sensor extends LinearOpMode {
+public class NERD_Velocity_Test_V3 extends LinearOpMode {
     private NerdPIDCalc_MotionProfiling VPID;
 
     private ElapsedTime ETime = new ElapsedTime();
@@ -55,17 +55,21 @@ public class NERD_Velocity_Test_V2_sensor extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
 
-    private final int X_DIRECTION = -1; // 1 For Red Alliance, -1 for Blue
 
     @Override
     public void runOpMode() {
         //Create a NerdBOT object
         VPID = new NerdPIDCalc_MotionProfiling(this);
 
-        VPID.setFLGains(0.00732, 0.01, 0.0);
-        VPID.setFRGains(0.00732, 0.01, 0.0);
-        VPID.setRLGains(0.00732, 0.01, 0.0);
-        VPID.setRRGains(0.00732, 0.01, 0.0);
+        double aP = 0.005; //0.009;, 0.025
+        double aI = 0.08; //0.12;, 0.08
+        double aD = 0.0;
+
+        VPID.setFLGains(aP, aI, aD);
+        VPID.setFRGains(aP, aI, aD);
+        VPID.setRLGains(aP, aI, aD);
+        VPID.setRRGains(aP, aI, aD);//.00732
+        VPID.setGyroGains(0.02, 0, 0);//0.015
 
         VPID.initializeHardware();
 
@@ -73,52 +77,64 @@ public class NERD_Velocity_Test_V2_sensor extends LinearOpMode {
 
         waitForStart();
 
-            runtime.reset();
+//        runtime.reset();
 
         VPID.maxVelocTime.reset();
         VPID.resetFL();
         VPID.resetFR();
         VPID.resetRL();
         VPID.resetRR();
-
-
-
-
-
-
+        VPID.resetgyroPID_angle();
         VPID.tickTime.reset();
+        VPID.driveTime.reset();
 
-            for (double i = 10; i <= 100; i += 10) {
-
-                ETime.reset();
-
-
-               // while (ETime.seconds() <= 10 && opModeIsActive()) {
-
+//
+//
+        VPID.LWM = -1;
+        VPID.RWM = 1;
 
 
-                    VPID.MaxVeloc_20_80 = i;
+        VPID.debugFlag2 = true;
+
+        RobotLog.d("newWorking");
+
+        VPID.ramp = false;
+
+//        if(VPID.ramp) {
+//
+//            VPID.rampMaxVeloc = 60;
+//            VPID.rampMinVeloc = 0;
+//            VPID.rampUpRate = 10;
+//            VPID.rampDownRate = 10;
+//            VPID.rampUpTime = 0.1;
+//            VPID.rampDownTime = 0.1;
+//            VPID.coastTime = 1;
+//a
+//
+//
+//
+//            for (int stage = 1; stage <= 4; stage++) {
+//
+//                VPID.ACDStage = stage;
+//
+//                VPID.runMotors();
+//
+//
+//            }
+//
+//        }
+
+        VPID.runMotors();
+
+        VPID.leftMotor.setPower(VPID.FLVeloc);
+        VPID.rightMotor.setPower(VPID.FRVeloc);
+        VPID.leftMotorB.setPower(VPID.RLVeloc);
+        VPID.rightMotorB.setPower(VPID.RRVeloc);
 
 
-                    VPID.runMotors();
 
-                   // RobotLog.d("Runtime - %f, Target Veloc, FL Veloc - %f, FR Veloc - %f, RL Veloc - %f, RR Veloc - %f", runtime.seconds(), VPID.MaxVeloc_20_80, VPID.Velocities[0], VPID.Velocities[1], VPID.Velocities[2], VPID.Velocities[3]);
-
-                    telemetry.addData("FL Velocc", VPID.Velocities[0]);
-                    telemetry.addData("FR Velocc", VPID.Velocities[1]);
-                    telemetry.addData("RL Velocc", VPID.Velocities[2]);
-                    telemetry.addData("RR Velocc", VPID.Velocities[3]);
-                    telemetry.addData("Average motor POWAAAH", ((VPID.leftMotor.getPower() + VPID.leftMotorB.getPower() + VPID.rightMotor.getPower() + VPID.rightMotorB.getPower()) / 4));
-                    telemetry.update();
-
-
-
-
-           // }
-
-                if(!opModeIsActive())
-                    break;
-
-        }
     }
 }
+
+
+
